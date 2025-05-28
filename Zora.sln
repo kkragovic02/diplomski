@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartUp", "StartUp\StartUp.csproj", "{4EBD1A68-BD07-4B56-9396-E1516220A48E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zora.WebApi", "Zora.WebApi\Zora.WebApi.csproj", "{085A8508-2B6B-414C-8A9E-FDE6A4B4C1A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zora.Core", "Zora.Core\Zora.Core.csproj", "{FBCD1747-B2E2-486F-A9A4-631E7FA6154E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4EBD1A68-BD07-4B56-9396-E1516220A48E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EBD1A68-BD07-4B56-9396-E1516220A48E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EBD1A68-BD07-4B56-9396-E1516220A48E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EBD1A68-BD07-4B56-9396-E1516220A48E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{085A8508-2B6B-414C-8A9E-FDE6A4B4C1A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{085A8508-2B6B-414C-8A9E-FDE6A4B4C1A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{085A8508-2B6B-414C-8A9E-FDE6A4B4C1A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{085A8508-2B6B-414C-8A9E-FDE6A4B4C1A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBCD1747-B2E2-486F-A9A4-631E7FA6154E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBCD1747-B2E2-486F-A9A4-631E7FA6154E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBCD1747-B2E2-486F-A9A4-631E7FA6154E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBCD1747-B2E2-486F-A9A4-631E7FA6154E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

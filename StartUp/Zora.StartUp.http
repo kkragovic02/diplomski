@@ -1,0 +1,6 @@
+@Zora.StartUp_HostAddress = http://localhost:5093
+
+GET {{Zora.StartUp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
