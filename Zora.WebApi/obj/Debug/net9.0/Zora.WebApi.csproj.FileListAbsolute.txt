@@ -9,3 +9,8 @@ C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\obj\Debug\net9
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\obj\Debug\net9.0\refint\Zora.WebApi.dll
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\obj\Debug\net9.0\Zora.WebApi.pdb
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\obj\Debug\net9.0\ref\Zora.WebApi.dll
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\bin\Debug\net9.0\Zora.Core.dll
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\bin\Debug\net9.0\Zora.Core.pdb
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\obj\Debug\net9.0\Zora.WebApi.csproj.AssemblyReference.cache
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\obj\Debug\net9.0\Zora.WebApi.sourcelink.json
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.WebApi\obj\Debug\net9.0\Zora.Web.2541C44E.Up2Date

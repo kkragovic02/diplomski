@@ -9,3 +9,7 @@ C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\obj\Debug\net9.0
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\obj\Debug\net9.0\refint\Zora.Core.dll
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\obj\Debug\net9.0\Zora.Core.pdb
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\obj\Debug\net9.0\ref\Zora.Core.dll
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\obj\Debug\net9.0\Zora.Core.csproj.AssemblyReference.cache
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\obj\Debug\net9.0\Zora.Core.sourcelink.json
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\bin\Debug\net9.0\Zora.Core.runtimeconfig.json
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\Zora.Core\obj\Debug\net9.0\Zora.Core.genruntimeconfig.cache
