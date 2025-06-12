@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Zora.Core.Features.EquipmentServices;
 using Zora.Core.Features.EquipmentServices.Models;
@@ -6,24 +9,38 @@ using Zora.Core.Features.EquipmentServices.Models;
 namespace Zora.WebApi;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class EquipmentController(
     IEquipmentReadService equipmentReadService,
     IEquipmentWriteService equipmentWriteService
 ) : ControllerBase
 {
-    [HttpGet("equipments")]
+    [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<Equipment>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IReadOnlyList<Equipment>>> GetAllEquipmentAsync(
+        [FromQuery] long? tourId,
         CancellationToken cancellationToken
     )
     {
-        var result = await equipmentReadService.GetAllEquipmentsAsync(cancellationToken);
-        return Ok(result.ToList());
+        IReadOnlyList<Equipment> equipment;
+
+        if (tourId.HasValue)
+        {
+            equipment = await equipmentReadService.GetEquimpentByTourIdAsync(
+                tourId.Value,
+                cancellationToken
+            );
+        }
+        else
+        {
+            equipment = await equipmentReadService.GetAllEquipmentsAsync(cancellationToken);
+        }
+
+        return Ok(equipment);
     }
 
-    [HttpGet("equipments/{equipmentId}", Name = "GetEquipmentById")]
+    [HttpGet("{equipmentId}", Name = "GetEquipmentById")]
     [ProducesResponseType(typeof(Equipment), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Equipment>> GetEquipmentByIdAsync(
@@ -44,7 +61,7 @@ public class EquipmentController(
         return equipment;
     }
 
-    [HttpPost("equipments")]
+    [HttpPost]
     [ProducesResponseType(typeof(Equipment), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Equipment>> CreateEquipmentAsync(
@@ -59,7 +76,7 @@ public class EquipmentController(
         return CreatedAtAction("GetEquipmentById", new { equipmentId = created.Id }, created);
     }
 
-    [HttpPut("equipments/{equipmentId}")]
+    [HttpPut("{equipmentId}")]
     [ProducesResponseType(typeof(Equipment), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Equipment>> UpdateEquipmentAsync(
@@ -82,7 +99,7 @@ public class EquipmentController(
         return updated;
     }
 
-    [HttpDelete("equipments/{equipmentId}")]
+    [HttpDelete("{equipmentId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteEquipmentAsync(
         [FromRoute] long equipmentId,

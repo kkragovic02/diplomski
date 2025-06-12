@@ -1,4 +1,7 @@
-﻿namespace Zora.Core.Features.TourServices.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Zora.Core.Features.TourServices.Models;
 
 public record CreateTour(
     string Name,

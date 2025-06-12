@@ -1,17 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
+using Zora.Core.Database.Models;
 using Zora.Core.Features.EquipmentServices.Models;
 
 namespace Zora.Core.Features.EquipmentServices;
 
 internal class EquipmentReadService(ZoraDbContext dbContext) : IEquipmentReadService
 {
-    public async Task<IEnumerable<Equipment>> GetAllEquipmentsAsync(
+    public async Task<IReadOnlyList<Equipment>> GetAllEquipmentsAsync(
         CancellationToken cancellationToken
     )
     {
         return await dbContext
-            .Equipments.Select(e => new Equipment(e.Id, e.Name))
+            .Equipments.Select(equipment => MapToEquipment(equipment))
             .ToListAsync(cancellationToken);
     }
 
@@ -20,11 +25,29 @@ internal class EquipmentReadService(ZoraDbContext dbContext) : IEquipmentReadSer
         CancellationToken cancellationToken
     )
     {
-        var equipment = await dbContext.Equipments.FirstOrDefaultAsync(
+        var equipmentModel = await dbContext.Equipments.FirstOrDefaultAsync(
             e => e.Id == id,
             cancellationToken
         );
 
-        return equipment == null ? null : new Equipment(equipment.Id, equipment.Name);
+        return equipmentModel == null ? null : MapToEquipment(equipmentModel);
+    }
+
+    public async Task<IReadOnlyList<Equipment>> GetEquimpentByTourIdAsync(
+        long tourId,
+        CancellationToken cancellationToken
+    )
+    {
+        var equipmentModels = await dbContext
+            .Equipments.Include(equipment => equipment.Tours)
+            .Where(equipment => equipment.Tours.Any(tour => tour.Id == tourId))
+            .ToListAsync(cancellationToken);
+
+        return equipmentModels.ConvertAll(MapToEquipment);
+    }
+
+    private static Equipment MapToEquipment(EquipmentModel equipmentModel)
+    {
+        return new Equipment(equipmentModel.Id, equipmentModel.Name);
     }
 }

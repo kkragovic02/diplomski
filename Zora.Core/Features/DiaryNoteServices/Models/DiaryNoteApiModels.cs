@@ -1,4 +1,6 @@
-﻿namespace Zora.Core.Features.DiaryNoteServices.Models;
+﻿using System;
+
+namespace Zora.Core.Features.DiaryNoteServices.Models;
 
 public record DiaryNote(
     long Id,
