@@ -52,8 +52,7 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
     )
     {
         var model = await dbContext
-            .Tours.Include(t => t.Equipment)
-            .Include(t => t.Attractions)
+            .Tours
             .FirstOrDefaultAsync(t => t.Id == tourId, cancellationToken);
 
         if (model == null)
@@ -67,18 +66,18 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         model.AvailableSpots = updateTour.AvailableSpots ?? model.AvailableSpots;
         model.ScheduledAt = updateTour.ScheduledAt ?? model.ScheduledAt;
         model.DestinationId = updateTour.DestinationId ?? model.DestinationId;
+        
 
-        if (updateTour.EquipmentIds?.Count > 0)
-        {
+        if (updateTour.EquipmentIds?.Count > 0
             model.Equipment = await dbContext
-                .Equipments.Where(e => updateTour.EquipmentIds.Contains((int)e.Id))
+                .Equipments.Where(e => updateTour.EquipmentIds.Contains(e.Id))
                 .ToListAsync(cancellationToken);
         }
 
         if (updateTour.AttractionIds?.Count > 0)
         {
             model.Attractions = await dbContext
-                .Attractions.Where(a => updateTour.AttractionIds.Contains((int)a.Id))
+                .Attractions.Where(a => updateTour.AttractionIds.Contains(a.Id))
                 .ToListAsync(cancellationToken);
         }
 

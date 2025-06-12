@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Zora.WebApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0a04edfcd1d12c5c52957a1004112b8c66b15064")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d702ee81fc8b18072d2bdce23eebdde239d2072a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Zora.WebApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Zora.WebApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Zora.Core.AttractionServices;
+using Zora.Core.AttractionServices.Models;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
 using Zora.Core.DestinationServices;
+using Zora.Core.DiaryNoteServices;
 using Zora.Core.EquipmentServices;
 using Zora.Core.TourServices;
 using Zora.Core.UserServices;
@@ -38,6 +41,12 @@ public static partial class ServiceProviderConfig
 
         services.AddScoped<IEquipmentReadService, EquipmentReadService>();
         services.AddScoped<IEquipmentWriteService, EquipmentWriteService>();
+
+        services.AddScoped<IAttractionReadService, AttractionReadService>();
+        services.AddScoped<IAttractionWriteService, AttractionWriteService>();
+
+        services.AddScoped<IDiaryNoteReadService, DiaryNoteReadService>();
+        services.AddScoped<IDiaryNoteWriteService, DiaryNoteWriteService>();
 
         return services;
     }

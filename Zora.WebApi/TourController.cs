@@ -5,11 +5,11 @@ using Zora.Core.TourServices.Models;
 namespace Zora.WebApi;
 
 [ApiController]
-[Route("api/tour/tours")]
+[Route("api/[controller]")]
 public class TourController(ITourWriteService tourWriteService, ITourReadService tourReadService)
     : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("tours")]
     public async Task<ActionResult<Tour>> CreateTour(
         [FromBody] CreateTour createTour,
         CancellationToken cancellationToken
@@ -19,7 +19,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         return CreatedAtAction(nameof(GetTourById), new { tourId = result.Id }, result);
     }
 
-    [HttpGet("{tourId:long}")]
+    [HttpGet("tours/{tourId:long}")]
     public async Task<ActionResult<Tour>> GetTourById(
         long tourId,
         CancellationToken cancellationToken
@@ -30,7 +30,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         return Ok(tour);
     }
 
-    [HttpGet("user/{userId:long}")]
+    [HttpGet("tours/user/{userId:long}")]
     public async Task<ActionResult<List<Tour>>> GetAllToursForUser(
         long userId,
         CancellationToken cancellationToken
@@ -40,7 +40,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         return Ok(tours);
     }
 
-    [HttpPut("{tourId:long}")]
+    [HttpPut("tours/{tourId:long}")]
     public async Task<ActionResult<Tour>> UpdateTour(
         long tourId,
         [FromBody] UpdateTour updateTour,
@@ -56,7 +56,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         return Ok(updated);
     }
 
-    [HttpDelete("{tourId:long}")]
+    [HttpDelete("tours/{tourId:long}")]
     public async Task<ActionResult> DeleteTour(long tourId, CancellationToken cancellationToken)
     {
         var success = await tourWriteService.DeleteTourAsync(tourId, cancellationToken);

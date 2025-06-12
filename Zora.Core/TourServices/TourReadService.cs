@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
+using Zora.Core.Database.Models;
+using Zora.Core.EquipmentServices.Models;
 using Zora.Core.TourServices.Models;
 
 namespace Zora.Core.TourServices;
@@ -32,7 +34,7 @@ internal class TourReadService(ZoraDbContext dbContext) : ITourReadService
         return tours.Select(MapToTour).ToList();
     }
 
-    private static Tour MapToTour(Database.Models.TourModel model) =>
+    private static Tour MapToTour(TourModel model) =>
         new()
         {
             Id = model.Id,

@@ -130,7 +130,7 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
         if (item == null)
         {
             dbContext.UserCheckLists.Add(
-                new CheckListItem
+                new CheckListItemModel
                 {
                     UserId = userId,
                     TourId = tourId,

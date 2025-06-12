@@ -8,13 +8,13 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
 {
     public const string SchemaName = "zora";
 
-    internal virtual DbSet<UserModel> Users => Set<UserModel>();
+    public DbSet<UserModel> Users => Set<UserModel>();
 
     public DbSet<DestinationModel> Destinations => Set<DestinationModel>();
 
     public DbSet<TourModel> Tours => Set<TourModel>();
 
-    public DbSet<CheckListItem> UserCheckLists => Set<CheckListItem>();
+    public DbSet<CheckListItemModel> UserCheckLists => Set<CheckListItemModel>();
 
     public DbSet<DiaryNoteModel> DiaryNotes => Set<DiaryNoteModel>();
 
@@ -31,7 +31,7 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
         ConfigureUser(modelBuilder.Entity<UserModel>());
         ConfigureDestination(modelBuilder.Entity<DestinationModel>());
         ConfigureTour(modelBuilder.Entity<TourModel>());
-        ConfigureCheckListItem(modelBuilder.Entity<CheckListItem>());
+        ConfigureCheckListItem(modelBuilder.Entity<CheckListItemModel>());
         ConfigureDiaryNote(modelBuilder.Entity<DiaryNoteModel>());
         ConfigureEquipment(modelBuilder.Entity<EquipmentModel>());
         ConfigureAttraction(modelBuilder.Entity<AttractionModel>());
@@ -102,7 +102,7 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
         builder.Property(t => t.ScheduledAt).IsRequired();
     }
 
-    private void ConfigureCheckListItem(EntityTypeBuilder<CheckListItem> builder)
+    private void ConfigureCheckListItem(EntityTypeBuilder<CheckListItemModel> builder)
     {
         builder.ToTable("CheckListItem");
         builder.Property(ucl => ucl.IsChecked).IsRequired();

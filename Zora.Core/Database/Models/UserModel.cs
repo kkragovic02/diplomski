@@ -25,5 +25,6 @@ public class UserModel
 
     public ICollection<TourModel> GuideTours { get; set; } = new List<TourModel>();
 
-    public ICollection<CheckListItem> UserCheckList { get; set; } = new List<CheckListItem>();
+    public ICollection<CheckListItemModel> UserCheckList { get; set; } =
+        new List<CheckListItemModel>();
 }

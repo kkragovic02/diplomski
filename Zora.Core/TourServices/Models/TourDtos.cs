@@ -36,9 +36,9 @@ public class UpdateTour
     public DateTime? ScheduledAt { get; set; }
     public long? DestinationId { get; set; }
 
-    public List<int> AttractionIds { get; set; } = [];
+    public List<long>? AttractionIds { get; set; }
 
-    public List<int> EquipmentIds { get; set; } = [];
+    public List<long>? EquipmentIds { get; set; }
 }
 
 public class Tour
