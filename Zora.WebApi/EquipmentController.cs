@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Zora.Core.EquipmentServices;
-using Zora.Core.EquipmentServices.Models;
+using Zora.Core.Features.EquipmentServices;
+using Zora.Core.Features.EquipmentServices.Models;
 
 namespace Zora.WebApi;
 

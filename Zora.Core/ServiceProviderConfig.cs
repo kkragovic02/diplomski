@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Zora.Core.AttractionServices;
-using Zora.Core.AttractionServices.Models;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
-using Zora.Core.DestinationServices;
-using Zora.Core.DiaryNoteServices;
-using Zora.Core.EquipmentServices;
-using Zora.Core.TourServices;
-using Zora.Core.UserServices;
+using Zora.Core.Features.AttractionServices;
+using Zora.Core.Features.DestinationServices;
+using Zora.Core.Features.DiaryNoteServices;
+using Zora.Core.Features.EquipmentServices;
+using Zora.Core.Features.TourServices;
+using Zora.Core.Features.UserServices;
 
 namespace Zora.Core;
 

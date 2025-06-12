@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Zora.Core.UserServices;
-using Zora.Core.UserServices.Models;
+using Zora.Core.Features.UserServices;
+using Zora.Core.Features.UserServices.Models;
 
 namespace Zora.WebApi;
 

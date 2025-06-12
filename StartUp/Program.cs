@@ -8,10 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDatabase();
 builder.Services.AddRequiredServices();
 builder
-    .Services.AddControllers()
-    .AddJsonOptions(opts =>
+    .Services.AddControllers(options =>
     {
-        opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.SuppressAsyncSuffixInActionNames = false;
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 ;
 builder.Services.AddEndpointsApiExplorer();

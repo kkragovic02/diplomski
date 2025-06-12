@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Zora.Core.TourServices;
-using Zora.Core.TourServices.Models;
+using Zora.Core.Features.TourServices;
+using Zora.Core.Features.TourServices.Models;
 
 namespace Zora.WebApi;
 
