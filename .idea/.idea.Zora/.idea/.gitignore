@@ -13,3 +13,4 @@
 /dataSources.local.xml
 **/bin/
 **/obj/
+*.dll
