@@ -15,28 +15,25 @@ public class AttractionsController(
 ) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Attraction>>> GetAllAttractionsAsync(
+    [ProducesResponseType(typeof(IReadOnlyList<Attraction>), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<IReadOnlyList<Attraction>>> GetAllAttractionsAsync(
+        [FromQuery] long? tourId,
         CancellationToken cancellationToken
     )
     {
-        var attractions = await readService.GetAllAttractionsAsync(cancellationToken);
-        return Ok(attractions);
-    }
+        IReadOnlyList<Attraction> attractions;
 
-    [HttpGet("{id:long}")]
-    public async Task<ActionResult<Attraction>> GetAttractionByIdAsync(
-        [FromRoute] long id,
-        CancellationToken cancellationToken
-    )
-    {
-        var attraction = await readService.GetAttractionByIdAsync(id, cancellationToken);
-
-        if (attraction is null)
+        if (tourId.HasValue)
         {
-            return NotFound();
+            attractions = await readService.GetByTourIdAsync(tourId.Value, cancellationToken);
+        }
+        else
+        {
+            attractions = await readService.GetAllAsync(cancellationToken);
         }
 
-        return Ok(attraction);
+        return Ok(attractions);
     }
 
     [HttpPost]
@@ -45,10 +42,7 @@ public class AttractionsController(
         CancellationToken cancellationToken
     )
     {
-        var attraction = await writeService.CreateAttractionAsync(
-            createAttraction,
-            cancellationToken
-        );
+        var attraction = await writeService.CreateAsync(createAttraction, cancellationToken);
 
         return CreatedAtAction(
             nameof(CreateAttractionAsync),
@@ -64,11 +58,7 @@ public class AttractionsController(
         CancellationToken cancellationToken
     )
     {
-        var updated = await writeService.UpdateAttractionAsync(
-            id,
-            updatedAttraction,
-            cancellationToken
-        );
+        var updated = await writeService.UpdateAsync(id, updatedAttraction, cancellationToken);
 
         if (updated is null)
         {
@@ -84,7 +74,7 @@ public class AttractionsController(
         CancellationToken cancellationToken
     )
     {
-        await writeService.DeleteAttractionAsync(id, cancellationToken);
+        await writeService.DeleteAsync(id, cancellationToken);
 
         return NoContent();
     }

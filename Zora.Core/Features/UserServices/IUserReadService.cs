@@ -7,5 +7,5 @@ namespace Zora.Core.Features.UserServices;
 
 public interface IUserReadService
 {
-    Task<List<User>> GetAllUsersAsync(CancellationToken cancellationToken, string? name = null);
+    Task<List<User>> GetAllAsync(CancellationToken cancellationToken, string? userName = null);
 }

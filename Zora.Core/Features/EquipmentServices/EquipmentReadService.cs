@@ -11,29 +11,27 @@ namespace Zora.Core.Features.EquipmentServices;
 
 internal class EquipmentReadService(ZoraDbContext dbContext) : IEquipmentReadService
 {
-    public async Task<IReadOnlyList<Equipment>> GetAllEquipmentsAsync(
-        CancellationToken cancellationToken
-    )
+    public async Task<IReadOnlyList<Equipment>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await dbContext
             .Equipments.Select(equipment => MapToEquipment(equipment))
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Equipment?> GetEquipmentByIdAsync(
-        long id,
+    public async Task<Equipment?> GetByIdAsync(
+        long equipmentId,
         CancellationToken cancellationToken
     )
     {
         var equipmentModel = await dbContext.Equipments.FirstOrDefaultAsync(
-            e => e.Id == id,
+            equipment => equipment.Id == equipmentId,
             cancellationToken
         );
 
         return equipmentModel == null ? null : MapToEquipment(equipmentModel);
     }
 
-    public async Task<IReadOnlyList<Equipment>> GetEquimpentByTourIdAsync(
+    public async Task<IReadOnlyList<Equipment>> GetByTourIdAsync(
         long tourId,
         CancellationToken cancellationToken
     )

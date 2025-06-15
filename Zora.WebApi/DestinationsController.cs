@@ -22,7 +22,7 @@ public class DestinationsController(
         CancellationToken cancellationToken
     )
     {
-        var destination = await destinationReadService.GetDestinationByIdAsync(
+        var destination = await destinationReadService.GetByIdAsync(
             destinationId,
             cancellationToken
         );
@@ -43,7 +43,7 @@ public class DestinationsController(
         CancellationToken cancellationToken
     )
     {
-        var destination = await destinationWriteService.CreateDestinationAsync(
+        var destination = await destinationWriteService.CreateAsync(
             createDestination,
             cancellationToken
         );
@@ -60,7 +60,7 @@ public class DestinationsController(
         CancellationToken cancellationToken
     )
     {
-        var updated = await destinationWriteService.UpdateDestinationAsync(
+        var updated = await destinationWriteService.UpdateAsync(
             destinationId,
             updateDestination,
             cancellationToken
@@ -81,7 +81,7 @@ public class DestinationsController(
         CancellationToken cancellationToken
     )
     {
-        await destinationWriteService.DeleteDestinationAsync(destinationId, cancellationToken);
+        await destinationWriteService.DeleteAsync(destinationId, cancellationToken);
 
         return NoContent();
     }

@@ -12,9 +12,9 @@ namespace Zora.Core.Features.UserServices;
 
 internal class UserReadService(ZoraDbContext dbContext) : IUserReadService
 {
-    public async Task<List<User>> GetAllUsersAsync(
+    public async Task<List<User>> GetAllAsync(
         CancellationToken cancellationToken,
-        string? name = null
+        string? UserName = null
     )
     {
         var users = await dbContext
@@ -22,9 +22,11 @@ internal class UserReadService(ZoraDbContext dbContext) : IUserReadService
             .AsNoTracking()
             .ToListAsync(cancellationToken: cancellationToken);
 
-        var filteredUsers = string.IsNullOrEmpty(name)
+        var filteredUsers = string.IsNullOrEmpty(UserName)
             ? users
-            : users.Where(u => u.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            : users
+                .Where(u => u.Name.Contains(UserName, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
         return filteredUsers;
     }

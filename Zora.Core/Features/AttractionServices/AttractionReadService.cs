@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zora.Core.Database;
+using Zora.Core.Database.Models;
 using Zora.Core.Features.AttractionServices.Models;
 
 namespace Zora.Core.Features.AttractionServices;
@@ -14,9 +15,7 @@ internal class AttractionReadService(
     ILogger<AttractionWriteService> logger
 ) : IAttractionReadService
 {
-    public async Task<IReadOnlyList<Attraction>> GetAllAttractionsAsync(
-        CancellationToken cancellationToken
-    )
+    public async Task<IReadOnlyList<Attraction>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await dbContext
             .Attractions.AsNoTracking()
@@ -29,17 +28,35 @@ internal class AttractionReadService(
         CancellationToken cancellationToken
     )
     {
-        var attraction = await dbContext
+        var attractionModel = await dbContext
             .Attractions.AsNoTracking()
             .FirstOrDefaultAsync(attraction => attraction.Id == id, cancellationToken);
 
-        if (attraction == null)
+        if (attractionModel == null)
         {
             logger.LogWarning("Attraction with ID {AttractionId} not found.", id);
 
             return null;
         }
 
-        return new Attraction(attraction.Id, attraction.Name);
+        return MapToAttraction(attractionModel);
+    }
+
+    public async Task<IReadOnlyList<Attraction>> GetByTourIdAsync(
+        long tourId,
+        CancellationToken cancellationToken
+    )
+    {
+        var attractionModel = await dbContext
+            .Attractions.Include(attraction => attraction.Tours)
+            .Where(attraction => attraction.Tours.Any(tour => tour.Id == tourId))
+            .ToListAsync(cancellationToken);
+
+        return attractionModel.ConvertAll(MapToAttraction);
+    }
+
+    private static Attraction MapToAttraction(AttractionModel attractionModel)
+    {
+        return new Attraction(attractionModel.Id, attractionModel.Name);
     }
 }

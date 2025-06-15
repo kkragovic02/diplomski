@@ -11,65 +11,67 @@ namespace Zora.Core.Features.DiaryNoteServices;
 
 internal class DiaryNoteWriteService(ZoraDbContext dbContext) : IDiaryNoteWriteService
 {
-    public async Task<DiaryNote> CreateNoteAsync(
-        CreateDiaryNote createNote,
+    public async Task<DiaryNote> CreateAsync(
+        CreateDiaryNote createDiaryNote,
         CancellationToken cancellationToken
     )
     {
-        var model = new DiaryNoteModel
+        var diaryNoteModel = new DiaryNoteModel
         {
-            Title = createNote.Title,
-            Content = createNote.Content,
-            UserId = createNote.UserId,
-            TourId = createNote.TourId,
+            Title = createDiaryNote.Title,
+            Content = createDiaryNote.Content,
+            UserId = createDiaryNote.UserId,
+            TourId = createDiaryNote.TourId,
             CreatedAt = DateTime.UtcNow,
         };
 
-        dbContext.DiaryNotes.Add(model);
+        dbContext.DiaryNotes.Add(diaryNoteModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new DiaryNote(
-            model.Id,
-            model.Title,
-            model.Content,
-            model.CreatedAt.DateTime,
-            model.UserId,
-            model.TourId
-        );
+        return MapToDiaryNote(diaryNoteModel);
     }
 
-    public async Task<DiaryNote?> UpdateNoteAsync(
-        long noteId,
-        UpdateDiaryNote updateNote,
+    public async Task<DiaryNote?> UpdateAsync(
+        long diaryNoteId,
+        UpdateDiaryNote updateDiaryNote,
         CancellationToken cancellationToken
     )
     {
-        var note = await dbContext.DiaryNotes.FirstOrDefaultAsync(
-            n => n.Id == noteId,
+        var diaryNoteModel = await dbContext.DiaryNotes.FirstOrDefaultAsync(
+            diaryNote => diaryNote.Id == diaryNoteId,
             cancellationToken
         );
 
-        if (note is null)
+        if (diaryNoteModel is null)
+        {
             return null;
+        }
 
-        note.Title = updateNote.Title ?? note.Title;
-        note.Content = updateNote.Content ?? note.Content;
+        diaryNoteModel.Title = updateDiaryNote.Title ?? diaryNoteModel.Title;
+        diaryNoteModel.Content = updateDiaryNote.Content ?? diaryNoteModel.Content;
 
-        dbContext.DiaryNotes.Update(note);
+        dbContext.DiaryNotes.Update(diaryNoteModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new DiaryNote(
-            note.Id,
-            note.Title,
-            note.Content,
-            note.CreatedAt.DateTime,
-            note.UserId,
-            note.TourId
-        );
+        return MapToDiaryNote(diaryNoteModel);
     }
 
-    public async Task DeleteNoteAsync(long noteId, CancellationToken cancellationToken)
+    public async Task DeleteAsync(long diaryNoteId, CancellationToken cancellationToken)
     {
-        await dbContext.DiaryNotes.Where(n => n.Id == noteId).ExecuteDeleteAsync(cancellationToken);
+        await dbContext
+            .DiaryNotes.Where(diaryNote => diaryNote.Id == diaryNoteId)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
+
+    private static DiaryNote MapToDiaryNote(DiaryNoteModel diaryNoteModel)
+    {
+        return new DiaryNote(
+            diaryNoteModel.Id,
+            diaryNoteModel.Title,
+            diaryNoteModel.Content,
+            diaryNoteModel.CreatedAt.DateTime,
+            diaryNoteModel.UserId,
+            diaryNoteModel.TourId
+        );
     }
 }

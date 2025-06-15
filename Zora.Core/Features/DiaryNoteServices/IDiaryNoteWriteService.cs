@@ -6,14 +6,14 @@ namespace Zora.Core.Features.DiaryNoteServices;
 
 public interface IDiaryNoteWriteService
 {
-    Task<DiaryNote> CreateNoteAsync(
-        CreateDiaryNote createNote,
+    Task<DiaryNote> CreateAsync(
+        CreateDiaryNote createDiaryNote,
         CancellationToken cancellationToken
     );
-    Task<DiaryNote?> UpdateNoteAsync(
-        long noteId,
-        UpdateDiaryNote updateNote,
+    Task<DiaryNote?> UpdateAsync(
+        long diaryNoteId,
+        UpdateDiaryNote updateDiaryNote,
         CancellationToken cancellationToken
     );
-    Task DeleteNoteAsync(long noteId, CancellationToken cancellationToken);
+    Task DeleteAsync(long diaryNoteId, CancellationToken cancellationToken);
 }

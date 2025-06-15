@@ -6,15 +6,15 @@ namespace Zora.Core.Features.UserServices;
 
 public interface IUserWriteService
 {
-    public Task<User> CreateUserAsync(CreateUser user, CancellationToken cancellationToken);
+    public Task<User> CreateAsync(CreateUser user, CancellationToken cancellationToken);
 
-    public Task<User?> UpdateUserAsync(
+    public Task<User?> UpdateAsync(
         long userId,
         UpdateUser user,
         CancellationToken cancellationToken
     );
 
-    public Task DeleteUserAsync(long userId, CancellationToken cancellationToken);
+    public Task DeleteAsync(long userId, CancellationToken cancellationToken);
 
     public Task<bool> JoinTourAsync(long userId, long tourId, CancellationToken cancellationToken);
 
