@@ -14,7 +14,7 @@ internal class AttractionWriteService(
     ILogger<AttractionWriteService> logger
 ) : IAttractionWriteService
 {
-    public async Task<Attraction> CreateAttractionAsync(
+    public async Task<Attraction> CreateAsync(
         CreateAttraction createAttraction,
         CancellationToken cancellationToken
     )
@@ -32,7 +32,7 @@ internal class AttractionWriteService(
         return MapToAttraction(attractionModel);
     }
 
-    public async Task<Attraction?> UpdateAttractionAsync(
+    public async Task<Attraction?> UpdateAsync(
         long attractionId,
         UpdateAttraction updateAttraction,
         CancellationToken cancellationToken
@@ -64,7 +64,7 @@ internal class AttractionWriteService(
         return MapToAttraction(attractionToUpdate);
     }
 
-    public async Task DeleteAttractionAsync(long id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
         await dbContext
             .Attractions.Where(attraction => attraction.Id == id)

@@ -6,5 +6,5 @@ namespace Zora.Core.Features.DestinationServices;
 
 public interface IDestinationReadService
 {
-    Task<Destination?> GetDestinationByIdAsync(long id, CancellationToken cancellationToken);
+    Task<Destination?> GetByIdAsync(long id, CancellationToken cancellationToken);
 }

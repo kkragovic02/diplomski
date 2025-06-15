@@ -8,7 +8,7 @@ namespace Zora.Core.Features.DestinationServices;
 
 internal class DestinationReadService(ZoraDbContext dbContext) : IDestinationReadService
 {
-    public async Task<Destination?> GetDestinationByIdAsync(
+    public async Task<Destination?> GetByIdAsync(
         long destinationId,
         CancellationToken cancellationToken
     )

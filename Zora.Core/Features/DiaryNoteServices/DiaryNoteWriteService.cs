@@ -11,7 +11,7 @@ namespace Zora.Core.Features.DiaryNoteServices;
 
 internal class DiaryNoteWriteService(ZoraDbContext dbContext) : IDiaryNoteWriteService
 {
-    public async Task<DiaryNote> CreateNoteAsync(
+    public async Task<DiaryNote> CreateAsync(
         CreateDiaryNote createDiaryNote,
         CancellationToken cancellationToken
     )
@@ -28,40 +28,42 @@ internal class DiaryNoteWriteService(ZoraDbContext dbContext) : IDiaryNoteWriteS
         dbContext.DiaryNotes.Add(diaryNoteModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToDto(diaryNoteModel);
+        return MapToDiaryNote(diaryNoteModel);
     }
 
-    public async Task<DiaryNote?> UpdateNoteAsync(
+    public async Task<DiaryNote?> UpdateAsync(
         long diaryNoteId,
         UpdateDiaryNote updateDiaryNote,
         CancellationToken cancellationToken
     )
     {
-        var diaryNote = await dbContext.DiaryNotes.FirstOrDefaultAsync(
+        var diaryNoteModel = await dbContext.DiaryNotes.FirstOrDefaultAsync(
             diaryNote => diaryNote.Id == diaryNoteId,
             cancellationToken
         );
 
-        if (diaryNote is null)
+        if (diaryNoteModel is null)
+        {
             return null;
+        }
 
-        diaryNote.Title = updateDiaryNote.Title ?? diaryNote.Title;
-        diaryNote.Content = updateDiaryNote.Content ?? diaryNote.Content;
+        diaryNoteModel.Title = updateDiaryNote.Title ?? diaryNoteModel.Title;
+        diaryNoteModel.Content = updateDiaryNote.Content ?? diaryNoteModel.Content;
 
-        dbContext.DiaryNotes.Update(diaryNote);
+        dbContext.DiaryNotes.Update(diaryNoteModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToDto(diaryNote);
+        return MapToDiaryNote(diaryNoteModel);
     }
 
-    public async Task DeleteNoteAsync(long diaryNoteId, CancellationToken cancellationToken)
+    public async Task DeleteAsync(long diaryNoteId, CancellationToken cancellationToken)
     {
         await dbContext
             .DiaryNotes.Where(diaryNote => diaryNote.Id == diaryNoteId)
             .ExecuteDeleteAsync(cancellationToken);
     }
 
-    private static DiaryNote MapToDto(DiaryNoteModel diaryNoteModel)
+    private static DiaryNote MapToDiaryNote(DiaryNoteModel diaryNoteModel)
     {
         return new DiaryNote(
             diaryNoteModel.Id,

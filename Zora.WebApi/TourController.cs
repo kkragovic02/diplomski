@@ -18,7 +18,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         CancellationToken cancellationToken
     )
     {
-        var result = await tourWriteService.CreateTourAsync(createTour, cancellationToken);
+        var result = await tourWriteService.CreateAsync(createTour, cancellationToken);
         return CreatedAtAction(nameof(GetTourById), new { tourId = result.Id }, result);
     }
 
@@ -28,7 +28,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         CancellationToken cancellationToken
     )
     {
-        var tour = await tourReadService.GetTourByIdAsync(tourId, cancellationToken);
+        var tour = await tourReadService.GetByIdAsync(tourId, cancellationToken);
 
         return Ok(tour);
     }
@@ -39,7 +39,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         CancellationToken cancellationToken
     )
     {
-        var tours = await tourReadService.GetAllToursForUserAsync(userId, cancellationToken);
+        var tours = await tourReadService.GetAllForUserAsync(userId, cancellationToken);
         return Ok(tours);
     }
 
@@ -50,7 +50,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         CancellationToken cancellationToken
     )
     {
-        var updated = await tourWriteService.UpdateTourAsync(tourId, updateTour, cancellationToken);
+        var updated = await tourWriteService.UpdateAsync(tourId, updateTour, cancellationToken);
         if (updated is null)
         {
             return NotFound();
@@ -62,7 +62,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
     [HttpDelete("tours/{tourId:long}")]
     public async Task<ActionResult> DeleteTour(long tourId, CancellationToken cancellationToken)
     {
-        var success = await tourWriteService.DeleteTourAsync(tourId, cancellationToken);
+        var success = await tourWriteService.DeleteAsync(tourId, cancellationToken);
         if (!success)
         {
             return NotFound();

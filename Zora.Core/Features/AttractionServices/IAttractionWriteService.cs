@@ -6,16 +6,16 @@ namespace Zora.Core.Features.AttractionServices;
 
 public interface IAttractionWriteService
 {
-    Task<Attraction> CreateAttractionAsync(
-        CreateAttraction attraction,
+    Task<Attraction> CreateAsync(
+        CreateAttraction createAttraction,
         CancellationToken cancellationToken
     );
 
-    Task<Attraction?> UpdateAttractionAsync(
+    Task<Attraction?> UpdateAsync(
         long attractionId,
         UpdateAttraction updateAttraction,
         CancellationToken cancellationToken
     );
 
-    Task DeleteAttractionAsync(long id, CancellationToken cancellationToken);
+    Task DeleteAsync(long id, CancellationToken cancellationToken);
 }

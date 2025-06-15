@@ -12,7 +12,7 @@ namespace Zora.Core.Features.UserServices;
 
 internal class UserReadService(ZoraDbContext dbContext) : IUserReadService
 {
-    public async Task<List<User>> GetAllUsersAsync(
+    public async Task<List<User>> GetAllAsync(
         CancellationToken cancellationToken,
         string? UserName = null
     )

@@ -12,10 +12,7 @@ namespace Zora.Core.Features.UserServices;
 internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDbContext dbContext)
     : IUserWriteService
 {
-    public async Task<User> CreateUserAsync(
-        CreateUser createUser,
-        CancellationToken cancellationToken
-    )
+    public async Task<User> CreateAsync(CreateUser createUser, CancellationToken cancellationToken)
     {
         var user = MapToUserModel(createUser);
         user.PasswordHash = passwordHasher.HashPassword(user, createUser.Password);
@@ -26,7 +23,7 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
         return new User(user.Id, user.Name, user.Email, user.Role);
     }
 
-    public async Task<User?> UpdateUserAsync(
+    public async Task<User?> UpdateAsync(
         long userId,
         UpdateUser updateUser,
         CancellationToken cancellationToken
@@ -56,7 +53,7 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
         return new User(user.Id, user.Name, user.Email, user.Role);
     }
 
-    public Task DeleteUserAsync(long userId, CancellationToken cancellationToken)
+    public Task DeleteAsync(long userId, CancellationToken cancellationToken)
     {
         return dbContext
             .Users.Where(user => user.Id == userId)

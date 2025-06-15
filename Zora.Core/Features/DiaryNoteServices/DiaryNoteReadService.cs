@@ -11,7 +11,7 @@ namespace Zora.Core.Features.DiaryNoteServices;
 
 internal class DiaryNoteReadService(ZoraDbContext dbContext) : IDiaryNoteReadService
 {
-    public async Task<List<DiaryNote>> GetAllNotesAsync(
+    public async Task<List<DiaryNote>> GetAllAsync(
         CancellationToken cancellationToken,
         long? userId = null
     )
@@ -24,7 +24,7 @@ internal class DiaryNoteReadService(ZoraDbContext dbContext) : IDiaryNoteReadSer
         return diaryNotes.Select(MapToDto).ToList();
     }
 
-    public async Task<DiaryNote?> GetNoteByIdAsync(
+    public async Task<DiaryNote?> GetByIdAsync(
         long diaryNoteId,
         CancellationToken cancellationToken
     )

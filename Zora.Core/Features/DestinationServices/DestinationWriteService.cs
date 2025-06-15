@@ -10,7 +10,7 @@ namespace Zora.Core.Features.DestinationServices;
 
 internal class DestinationWriteService(ZoraDbContext dbContext) : IDestinationWriteService
 {
-    public async Task<Destination> CreateDestinationAsync(
+    public async Task<Destination> CreateAsync(
         CreateDestination createDestination,
         CancellationToken cancellationToken
     )
@@ -27,7 +27,7 @@ internal class DestinationWriteService(ZoraDbContext dbContext) : IDestinationWr
         return MapToDestination(destinationModel);
     }
 
-    public async Task<Destination?> UpdateDestinationAsync(
+    public async Task<Destination?> UpdateAsync(
         long destinationId,
         UpdateDestination updateDestination,
         CancellationToken cancellationToken
@@ -53,10 +53,7 @@ internal class DestinationWriteService(ZoraDbContext dbContext) : IDestinationWr
         return MapToDestination(destinationToUpdate);
     }
 
-    public async Task DeleteDestinationAsync(
-        long destinationId,
-        CancellationToken cancellationToken
-    )
+    public async Task DeleteAsync(long destinationId, CancellationToken cancellationToken)
     {
         await dbContext
             .Destinations.Where(destination => destination.Id == destinationId)

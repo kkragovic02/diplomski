@@ -7,6 +7,6 @@ namespace Zora.Core.Features.TourServices;
 
 public interface ITourReadService
 {
-    Task<Tour> GetTourByIdAsync(long tourId, CancellationToken cancellationToken);
-    Task<List<Tour>> GetAllToursForUserAsync(long userId, CancellationToken cancellationToken);
+    Task<Tour> GetByIdAsync(long tourId, CancellationToken cancellationToken);
+    Task<List<Tour>> GetAllForUserAsync(long userId, CancellationToken cancellationToken);
 }

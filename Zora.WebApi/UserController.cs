@@ -21,7 +21,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         CancellationToken cancellationToken
     )
     {
-        return await userReadService.GetAllUsersAsync(cancellationToken, name);
+        return await userReadService.GetAllAsync(cancellationToken, name);
     }
 
     [HttpPost("users")]
@@ -37,7 +37,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
             return BadRequest("Invalid email format.");
         }
 
-        return await userWriteService.CreateUserAsync(createUser, cancellationToken);
+        return await userWriteService.CreateAsync(createUser, cancellationToken);
     }
 
     [HttpPut("users/{userId}")]
@@ -52,11 +52,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
             return BadRequest("Invalid email format.");
         }
 
-        var updatedUser = await userWriteService.UpdateUserAsync(
-            userId,
-            updateUser,
-            cancellationToken
-        );
+        var updatedUser = await userWriteService.UpdateAsync(userId, updateUser, cancellationToken);
 
         if (updatedUser == null)
         {
@@ -72,7 +68,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         CancellationToken cancellationToken
     )
     {
-        await userWriteService.DeleteUserAsync(userId, cancellationToken);
+        await userWriteService.DeleteAsync(userId, cancellationToken);
         return NoContent();
     }
 

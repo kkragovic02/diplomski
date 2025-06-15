@@ -11,10 +11,7 @@ namespace Zora.Core.Features.TourServices;
 
 internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
 {
-    public async Task<Tour> CreateTourAsync(
-        CreateTour createTour,
-        CancellationToken cancellationToken
-    )
+    public async Task<Tour> CreateAsync(CreateTour createTour, CancellationToken cancellationToken)
     {
         var tourModel = new TourModel
         {
@@ -29,21 +26,27 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
             GuideId = createTour.GuideId,
         };
 
-        if (createTour.EquipmentIds?.Count > 0)
+        var equipmentTask = Task.FromResult(new List<EquipmentModel>());
+        var attractionsTask = Task.FromResult(new List<AttractionModel>());
+
+        if (createTour.EquipmentIds.Count > 0)
         {
-            tourModel.Equipment = await dbContext
-                .Equipments.Where(equipment => createTour.EquipmentIds.Contains((int)equipment.Id))
+            equipmentTask = dbContext
+                .Equipments.Where(equipment => createTour.EquipmentIds.Contains(equipment.Id))
                 .ToListAsync(cancellationToken);
         }
 
-        if (createTour.AttractionIds?.Count > 0)
+        if (createTour.AttractionIds.Count > 0)
         {
-            tourModel.Attractions = await dbContext
-                .Attractions.Where(attraction =>
-                    createTour.AttractionIds.Contains((int)attraction.Id)
-                )
+            attractionsTask = dbContext
+                .Attractions.Where(attraction => createTour.AttractionIds.Contains(attraction.Id))
                 .ToListAsync(cancellationToken);
         }
+
+        await Task.WhenAll(equipmentTask, attractionsTask);
+
+        tourModel.Equipment = await equipmentTask;
+        tourModel.Attractions = await attractionsTask;
 
         dbContext.Tours.Add(tourModel);
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -51,7 +54,7 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         return MapToTour(tourModel);
     }
 
-    public async Task<Tour?> UpdateTourAsync(
+    public async Task<Tour?> UpdateAsync(
         long tourId,
         UpdateTour updateTour,
         CancellationToken cancellationToken
@@ -63,7 +66,9 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         );
 
         if (tourModel == null)
+        {
             return null;
+        }
 
         tourModel.Name = updateTour.Name ?? tourModel.Name;
         tourModel.Description = updateTour.Description ?? tourModel.Description;
@@ -94,7 +99,7 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         return MapToTour(tourModel);
     }
 
-    public async Task<bool> DeleteTourAsync(long tourId, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(long tourId, CancellationToken cancellationToken)
     {
         var tour = await dbContext.Tours.FirstOrDefaultAsync(
             tour => tour.Id == tourId,

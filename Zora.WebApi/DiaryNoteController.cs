@@ -22,7 +22,7 @@ public class DiaryNoteController(
         CancellationToken cancellationToken
     )
     {
-        var notes = await diaryNoteReadService.GetAllNotesAsync(cancellationToken, userId);
+        var notes = await diaryNoteReadService.GetAllAsync(cancellationToken, userId);
         return Ok(notes);
     }
 
@@ -34,7 +34,7 @@ public class DiaryNoteController(
         CancellationToken cancellationToken
     )
     {
-        var note = await diaryNoteReadService.GetNoteByIdAsync(noteId, cancellationToken);
+        var note = await diaryNoteReadService.GetByIdAsync(noteId, cancellationToken);
         if (note == null)
             return NotFound();
         return Ok(note);
@@ -48,7 +48,7 @@ public class DiaryNoteController(
         CancellationToken cancellationToken
     )
     {
-        var note = await diaryNoteWriteService.CreateNoteAsync(createNote, cancellationToken);
+        var note = await diaryNoteWriteService.CreateAsync(createNote, cancellationToken);
         return CreatedAtAction("GetNoteById", new { noteId = note.Id }, note);
     }
 
@@ -61,7 +61,7 @@ public class DiaryNoteController(
         CancellationToken cancellationToken
     )
     {
-        var updated = await diaryNoteWriteService.UpdateNoteAsync(
+        var updated = await diaryNoteWriteService.UpdateAsync(
             noteId,
             updateNote,
             cancellationToken
@@ -78,7 +78,7 @@ public class DiaryNoteController(
         CancellationToken cancellationToken
     )
     {
-        await diaryNoteWriteService.DeleteNoteAsync(noteId, cancellationToken);
+        await diaryNoteWriteService.DeleteAsync(noteId, cancellationToken);
         return NoContent();
     }
 }

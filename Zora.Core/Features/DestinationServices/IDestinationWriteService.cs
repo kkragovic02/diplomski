@@ -6,14 +6,14 @@ namespace Zora.Core.Features.DestinationServices;
 
 public interface IDestinationWriteService
 {
-    Task<Destination> CreateDestinationAsync(
+    Task<Destination> CreateAsync(
         CreateDestination createDestination,
         CancellationToken cancellationToken
     );
-    Task<Destination?> UpdateDestinationAsync(
+    Task<Destination?> UpdateAsync(
         long destinationId,
         UpdateDestination updateDestination,
         CancellationToken cancellationToken
     );
-    Task DeleteDestinationAsync(long destinationId, CancellationToken cancellationToken);
+    Task DeleteAsync(long destinationId, CancellationToken cancellationToken);
 }

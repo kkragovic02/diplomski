@@ -26,14 +26,11 @@ public class AttractionsController(
 
         if (tourId.HasValue)
         {
-            attractions = await readService.GetAttractionsByTourIdAsync(
-                tourId.Value,
-                cancellationToken
-            );
+            attractions = await readService.GetByTourIdAsync(tourId.Value, cancellationToken);
         }
         else
         {
-            attractions = await readService.GetAllAttractionsAsync(cancellationToken);
+            attractions = await readService.GetAllAsync(cancellationToken);
         }
 
         return Ok(attractions);
@@ -45,10 +42,7 @@ public class AttractionsController(
         CancellationToken cancellationToken
     )
     {
-        var attraction = await writeService.CreateAttractionAsync(
-            createAttraction,
-            cancellationToken
-        );
+        var attraction = await writeService.CreateAsync(createAttraction, cancellationToken);
 
         return CreatedAtAction(
             nameof(CreateAttractionAsync),
@@ -64,11 +58,7 @@ public class AttractionsController(
         CancellationToken cancellationToken
     )
     {
-        var updated = await writeService.UpdateAttractionAsync(
-            id,
-            updatedAttraction,
-            cancellationToken
-        );
+        var updated = await writeService.UpdateAsync(id, updatedAttraction, cancellationToken);
 
         if (updated is null)
         {
@@ -84,7 +74,7 @@ public class AttractionsController(
         CancellationToken cancellationToken
     )
     {
-        await writeService.DeleteAttractionAsync(id, cancellationToken);
+        await writeService.DeleteAsync(id, cancellationToken);
 
         return NoContent();
     }

@@ -27,14 +27,14 @@ public class EquipmentController(
 
         if (tourId.HasValue)
         {
-            equipment = await equipmentReadService.GetEquimpentByTourIdAsync(
+            equipment = await equipmentReadService.GetByTourIdAsync(
                 tourId.Value,
                 cancellationToken
             );
         }
         else
         {
-            equipment = await equipmentReadService.GetAllEquipmentsAsync(cancellationToken);
+            equipment = await equipmentReadService.GetAllAsync(cancellationToken);
         }
 
         return Ok(equipment);
@@ -48,10 +48,7 @@ public class EquipmentController(
         CancellationToken cancellationToken
     )
     {
-        var equipment = await equipmentReadService.GetEquipmentByIdAsync(
-            equipmentId,
-            cancellationToken
-        );
+        var equipment = await equipmentReadService.GetByIdAsync(equipmentId, cancellationToken);
 
         if (equipment == null)
         {
@@ -69,10 +66,7 @@ public class EquipmentController(
         CancellationToken cancellationToken
     )
     {
-        var created = await equipmentWriteService.CreateEquipmentAsync(
-            createEquipment,
-            cancellationToken
-        );
+        var created = await equipmentWriteService.CreateAsync(createEquipment, cancellationToken);
         return CreatedAtAction("GetEquipmentById", new { equipmentId = created.Id }, created);
     }
 
@@ -85,7 +79,7 @@ public class EquipmentController(
         CancellationToken cancellationToken
     )
     {
-        var updated = await equipmentWriteService.UpdateEquipmentAsync(
+        var updated = await equipmentWriteService.UpdateAsync(
             equipmentId,
             update,
             cancellationToken
@@ -106,7 +100,7 @@ public class EquipmentController(
         CancellationToken cancellationToken
     )
     {
-        await equipmentWriteService.DeleteEquipmentAsync(equipmentId, cancellationToken);
+        await equipmentWriteService.DeleteAsync(equipmentId, cancellationToken);
         return NoContent();
     }
 }

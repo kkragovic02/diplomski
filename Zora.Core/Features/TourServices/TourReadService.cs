@@ -10,30 +10,32 @@ namespace Zora.Core.Features.TourServices;
 
 internal class TourReadService(ZoraDbContext dbContext) : ITourReadService
 {
-    public async Task<Tour> GetTourByIdAsync(long tourId, CancellationToken cancellationToken)
+    public async Task<Tour> GetByIdAsync(long tourId, CancellationToken cancellationToken)
     {
-        var tour = await dbContext
+        var tourModel = await dbContext
             .Tours.AsNoTracking()
             .Include(tour => tour.Equipment)
             .Include(tour => tour.Attractions)
             .FirstOrDefaultAsync(tour => tour.Id == tourId, cancellationToken);
 
-        return tour is null ? throw new KeyNotFoundException("Tour not found") : MapToTour(tour);
+        return tourModel is null
+            ? throw new KeyNotFoundException("Tour not found")
+            : MapToTour(tourModel);
     }
 
-    public async Task<List<Tour>> GetAllToursForUserAsync(
+    public async Task<List<Tour>> GetAllForUserAsync(
         long userId,
         CancellationToken cancellationToken
     )
     {
-        var tours = await dbContext
+        var tourModels = await dbContext
             .Tours.AsNoTracking()
             .Include(tour => tour.Equipment)
             .Include(tour => tour.Attractions)
             .Where(tour => tour.Participants.Any(u => u.Id == userId))
             .ToListAsync(cancellationToken);
 
-        return tours.Select(MapToTour).ToList();
+        return tourModels.Select(MapToTour).ToList();
     }
 
     private static Tour MapToTour(TourModel tourModel) =>

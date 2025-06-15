@@ -10,7 +10,7 @@ namespace Zora.Core.Features.EquipmentServices;
 
 internal class EquipmentWriteService(ZoraDbContext dbContext) : IEquipmentWriteService
 {
-    public async Task<Equipment> CreateEquipmentAsync(
+    public async Task<Equipment> CreateAsync(
         CreateEquipment createEquipment,
         CancellationToken cancellationToken
     )
@@ -23,7 +23,7 @@ internal class EquipmentWriteService(ZoraDbContext dbContext) : IEquipmentWriteS
         return new Equipment(equipment.Id, equipment.Name);
     }
 
-    public async Task<Equipment?> UpdateEquipmentAsync(
+    public async Task<Equipment?> UpdateAsync(
         long equipmentId,
         UpdateEquipment updateEquipment,
         CancellationToken cancellationToken
@@ -45,7 +45,7 @@ internal class EquipmentWriteService(ZoraDbContext dbContext) : IEquipmentWriteS
         return new Equipment(equipment.Id, equipment.Name);
     }
 
-    public async Task DeleteEquipmentAsync(long id, CancellationToken cancellationToken)
+    public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
         await dbContext
             .Equipments.Where(equipment => equipment.Id == id)
