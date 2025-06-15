@@ -10,4 +10,9 @@ public interface IAttractionReadService
     Task<IReadOnlyList<Attraction>> GetAllAttractionsAsync(CancellationToken cancellationToken);
 
     Task<Attraction?> GetAttractionByIdAsync(long id, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<Attraction>> GetAttractionsByTourIdAsync(
+        long tourId,
+        CancellationToken cancellationToken
+    );
 }

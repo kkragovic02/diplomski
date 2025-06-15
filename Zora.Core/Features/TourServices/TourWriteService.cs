@@ -16,7 +16,7 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         CancellationToken cancellationToken
     )
     {
-        var model = new TourModel
+        var tourModel = new TourModel
         {
             Name = createTour.Name,
             Description = createTour.Description ?? string.Empty,
@@ -31,22 +31,24 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
 
         if (createTour.EquipmentIds?.Count > 0)
         {
-            model.Equipment = await dbContext
-                .Equipments.Where(e => createTour.EquipmentIds.Contains((int)e.Id))
+            tourModel.Equipment = await dbContext
+                .Equipments.Where(equipment => createTour.EquipmentIds.Contains((int)equipment.Id))
                 .ToListAsync(cancellationToken);
         }
 
         if (createTour.AttractionIds?.Count > 0)
         {
-            model.Attractions = await dbContext
-                .Attractions.Where(a => createTour.AttractionIds.Contains((int)a.Id))
+            tourModel.Attractions = await dbContext
+                .Attractions.Where(attraction =>
+                    createTour.AttractionIds.Contains((int)attraction.Id)
+                )
                 .ToListAsync(cancellationToken);
         }
 
-        dbContext.Tours.Add(model);
+        dbContext.Tours.Add(tourModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToTour(model);
+        return MapToTour(tourModel);
     }
 
     public async Task<Tour?> UpdateTourAsync(
@@ -55,41 +57,41 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         CancellationToken cancellationToken
     )
     {
-        var model = await dbContext.Tours.FirstOrDefaultAsync(
-            t => t.Id == tourId,
+        var tourModel = await dbContext.Tours.FirstOrDefaultAsync(
+            tour => tour.Id == tourId,
             cancellationToken
         );
 
-        if (model == null)
+        if (tourModel == null)
             return null;
 
-        model.Name = updateTour.Name ?? model.Name;
-        model.Description = updateTour.Description ?? model.Description;
-        model.Distance = updateTour.Distance ?? model.Distance;
-        model.Duration = updateTour.Duration ?? model.Duration;
-        model.ElevationGain = updateTour.ElevationGain ?? model.ElevationGain;
-        model.AvailableSpots = updateTour.AvailableSpots ?? model.AvailableSpots;
-        model.ScheduledAt = updateTour.ScheduledAt ?? model.ScheduledAt;
-        model.DestinationId = updateTour.DestinationId ?? model.DestinationId;
+        tourModel.Name = updateTour.Name ?? tourModel.Name;
+        tourModel.Description = updateTour.Description ?? tourModel.Description;
+        tourModel.Distance = updateTour.Distance ?? tourModel.Distance;
+        tourModel.Duration = updateTour.Duration ?? tourModel.Duration;
+        tourModel.ElevationGain = updateTour.ElevationGain ?? tourModel.ElevationGain;
+        tourModel.AvailableSpots = updateTour.AvailableSpots ?? tourModel.AvailableSpots;
+        tourModel.ScheduledAt = updateTour.ScheduledAt ?? tourModel.ScheduledAt;
+        tourModel.DestinationId = updateTour.DestinationId ?? tourModel.DestinationId;
 
         if (updateTour.EquipmentIds?.Count > 0)
         {
-            model.Equipment = await dbContext
-                .Equipments.Where(e => updateTour.EquipmentIds.Contains(e.Id))
+            tourModel.Equipment = await dbContext
+                .Equipments.Where(equipment => updateTour.EquipmentIds.Contains(equipment.Id))
                 .ToListAsync(cancellationToken);
         }
 
         if (updateTour.AttractionIds?.Count > 0)
         {
-            model.Attractions = await dbContext
-                .Attractions.Where(a => updateTour.AttractionIds.Contains(a.Id))
+            tourModel.Attractions = await dbContext
+                .Attractions.Where(attraction => updateTour.AttractionIds.Contains(attraction.Id))
                 .ToListAsync(cancellationToken);
         }
 
-        model.UpdatedAt = DateTimeOffset.UtcNow;
+        tourModel.UpdatedAt = DateTimeOffset.UtcNow;
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToTour(model);
+        return MapToTour(tourModel);
     }
 
     public async Task<bool> DeleteTourAsync(long tourId, CancellationToken cancellationToken)

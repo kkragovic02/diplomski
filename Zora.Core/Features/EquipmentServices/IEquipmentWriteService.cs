@@ -7,12 +7,12 @@ namespace Zora.Core.Features.EquipmentServices;
 public interface IEquipmentWriteService
 {
     Task<Equipment> CreateEquipmentAsync(
-        CreateEquipment equipment,
+        CreateEquipment createEquipment,
         CancellationToken cancellationToken
     );
     Task<Equipment?> UpdateEquipmentAsync(
-        long id,
-        UpdateEquipment equipment,
+        long equipmentId,
+        UpdateEquipment updateEquipment,
         CancellationToken cancellationToken
     );
     Task DeleteEquipmentAsync(long id, CancellationToken cancellationToken);

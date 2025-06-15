@@ -21,12 +21,12 @@ internal class EquipmentReadService(ZoraDbContext dbContext) : IEquipmentReadSer
     }
 
     public async Task<Equipment?> GetEquipmentByIdAsync(
-        long id,
+        long equipmentId,
         CancellationToken cancellationToken
     )
     {
         var equipmentModel = await dbContext.Equipments.FirstOrDefaultAsync(
-            e => e.Id == id,
+            equipment => equipment.Id == equipmentId,
             cancellationToken
         );
 

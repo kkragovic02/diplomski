@@ -9,7 +9,7 @@ public interface IEquipmentReadService
 {
     Task<IReadOnlyList<Equipment>> GetAllEquipmentsAsync(CancellationToken cancellationToken);
 
-    Task<Equipment?> GetEquipmentByIdAsync(long id, CancellationToken cancellationToken);
+    Task<Equipment?> GetEquipmentByIdAsync(long equipmentId, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<Equipment>> GetEquimpentByTourIdAsync(
         long tourId,

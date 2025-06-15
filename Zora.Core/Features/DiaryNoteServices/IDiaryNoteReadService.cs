@@ -11,5 +11,5 @@ public interface IDiaryNoteReadService
         CancellationToken cancellationToken,
         long? userId = null
     );
-    Task<DiaryNote?> GetNoteByIdAsync(long noteId, CancellationToken cancellationToken);
+    Task<DiaryNote?> GetNoteByIdAsync(long diaryNoteId, CancellationToken cancellationToken);
 }

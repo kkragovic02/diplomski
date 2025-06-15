@@ -14,9 +14,9 @@ internal class TourReadService(ZoraDbContext dbContext) : ITourReadService
     {
         var tour = await dbContext
             .Tours.AsNoTracking()
-            .Include(t => t.Equipment)
-            .Include(t => t.Attractions)
-            .FirstOrDefaultAsync(t => t.Id == tourId, cancellationToken);
+            .Include(tour => tour.Equipment)
+            .Include(tour => tour.Attractions)
+            .FirstOrDefaultAsync(tour => tour.Id == tourId, cancellationToken);
 
         return tour is null ? throw new KeyNotFoundException("Tour not found") : MapToTour(tour);
     }
@@ -28,27 +28,27 @@ internal class TourReadService(ZoraDbContext dbContext) : ITourReadService
     {
         var tours = await dbContext
             .Tours.AsNoTracking()
-            .Include(t => t.Equipment)
-            .Include(t => t.Attractions)
-            .Where(t => t.Participants.Any(u => u.Id == userId))
+            .Include(tour => tour.Equipment)
+            .Include(tour => tour.Attractions)
+            .Where(tour => tour.Participants.Any(u => u.Id == userId))
             .ToListAsync(cancellationToken);
 
         return tours.Select(MapToTour).ToList();
     }
 
-    private static Tour MapToTour(TourModel model) =>
+    private static Tour MapToTour(TourModel tourModel) =>
         new Tour(
-            model.Id,
-            model.Name,
-            model.Description,
-            model.Distance,
-            model.Duration,
-            model.ElevationGain,
-            model.AvailableSpots,
-            model.ScheduledAt.DateTime,
-            model.DestinationId,
-            model.GuideId,
-            model.Equipment.Select(e => e.Id).ToList(),
-            model.Attractions.Select(a => a.Id).ToList()
+            tourModel.Id,
+            tourModel.Name,
+            tourModel.Description,
+            tourModel.Distance,
+            tourModel.Duration,
+            tourModel.ElevationGain,
+            tourModel.AvailableSpots,
+            tourModel.ScheduledAt.DateTime,
+            tourModel.DestinationId,
+            tourModel.GuideId,
+            tourModel.Equipment.Select(e => e.Id).ToList(),
+            tourModel.Attractions.Select(a => a.Id).ToList()
         );
 }

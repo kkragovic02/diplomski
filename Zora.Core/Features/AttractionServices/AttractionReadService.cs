@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zora.Core.Database;
+using Zora.Core.Database.Models;
 using Zora.Core.Features.AttractionServices.Models;
 
 namespace Zora.Core.Features.AttractionServices;
@@ -41,5 +42,23 @@ internal class AttractionReadService(
         }
 
         return new Attraction(attraction.Id, attraction.Name);
+    }
+
+    public async Task<IReadOnlyList<Attraction>> GetAttractionsByTourIdAsync(
+        long tourId,
+        CancellationToken cancellationToken
+    )
+    {
+        var attractionModel = await dbContext
+            .Attractions.Include(attraction => attraction.Tours)
+            .Where(attraction => attraction.Tours.Any(tour => tour.Id == tourId))
+            .ToListAsync(cancellationToken);
+
+        return attractionModel.ConvertAll(MapToAttraction);
+    }
+
+    private static Attraction MapToAttraction(AttractionModel attractionModel)
+    {
+        return new Attraction(attractionModel.Id, attractionModel.Name);
     }
 }

@@ -15,28 +15,28 @@ public class AttractionsController(
 ) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<Attraction>>> GetAllAttractionsAsync(
+    [ProducesResponseType(typeof(IReadOnlyList<Attraction>), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<IReadOnlyList<Attraction>>> GetAllAttractionsAsync(
+        [FromQuery] long? tourId,
         CancellationToken cancellationToken
     )
     {
-        var attractions = await readService.GetAllAttractionsAsync(cancellationToken);
-        return Ok(attractions);
-    }
+        IReadOnlyList<Attraction> attractions;
 
-    [HttpGet("{id:long}")]
-    public async Task<ActionResult<Attraction>> GetAttractionByIdAsync(
-        [FromRoute] long id,
-        CancellationToken cancellationToken
-    )
-    {
-        var attraction = await readService.GetAttractionByIdAsync(id, cancellationToken);
-
-        if (attraction is null)
+        if (tourId.HasValue)
         {
-            return NotFound();
+            attractions = await readService.GetAttractionsByTourIdAsync(
+                tourId.Value,
+                cancellationToken
+            );
+        }
+        else
+        {
+            attractions = await readService.GetAllAttractionsAsync(cancellationToken);
         }
 
-        return Ok(attraction);
+        return Ok(attractions);
     }
 
     [HttpPost]
