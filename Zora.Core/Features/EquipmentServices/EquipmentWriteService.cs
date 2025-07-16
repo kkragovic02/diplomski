@@ -1,10 +1,7 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
-using Zora.Core.Features.EquipmentServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.EquipmentServices;
 
@@ -15,12 +12,12 @@ internal class EquipmentWriteService(ZoraDbContext dbContext) : IEquipmentWriteS
         CancellationToken cancellationToken
     )
     {
-        var equipment = new EquipmentModel { Name = createEquipment.Name };
+        var equipmentModel = new EquipmentModel { Name = createEquipment.Name };
 
-        dbContext.Equipments.Add(equipment);
+        dbContext.Equipments.Add(equipmentModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new Equipment(equipment.Id, equipment.Name);
+        return equipmentModel.MapToEquipment();
     }
 
     public async Task<Equipment?> UpdateAsync(
@@ -29,20 +26,20 @@ internal class EquipmentWriteService(ZoraDbContext dbContext) : IEquipmentWriteS
         CancellationToken cancellationToken
     )
     {
-        var equipment = await dbContext.Equipments.FirstOrDefaultAsync(
+        var equipmentModel = await dbContext.Equipments.FirstOrDefaultAsync(
             equipment => equipment.Id == equipmentId,
             cancellationToken
         );
 
-        if (equipment == null)
+        if (equipmentModel == null)
             return null;
 
-        equipment.Name = updateEquipment.Name ?? equipment.Name;
+        equipmentModel.Name = updateEquipment.Name ?? equipmentModel.Name;
 
-        dbContext.Equipments.Update(equipment);
+        dbContext.Equipments.Update(equipmentModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new Equipment(equipment.Id, equipment.Name);
+        return equipmentModel.MapToEquipment();
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken)

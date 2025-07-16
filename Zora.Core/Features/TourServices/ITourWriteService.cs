@@ -1,6 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Zora.Core.Features.TourServices.Models;
+﻿using Zora.Core.Models;
 
 namespace Zora.Core.Features.TourServices;
 

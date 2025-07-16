@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Zora.Core.Features.UserServices;
-using Zora.Core.Features.UserServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.WebApi;
 
@@ -13,7 +10,7 @@ namespace Zora.WebApi;
 public class UserController(IUserReadService userReadService, IUserWriteService userWriteService)
     : ControllerBase
 {
-    [HttpGet("users")]
+    [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<User>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IReadOnlyList<User>>> GetUsersAsync(
@@ -24,7 +21,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         return await userReadService.GetAllAsync(cancellationToken, name);
     }
 
-    [HttpPost("users")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<User>> CreateUserAsync(
@@ -40,7 +37,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         return await userWriteService.CreateAsync(createUser, cancellationToken);
     }
 
-    [HttpPut("users/{userId}")]
+    [HttpPut("{userId}")]
     public async Task<ActionResult<User>> UpdateUserAsync(
         [FromRoute] long userId,
         [FromBody] UpdateUser updateUser,
@@ -62,7 +59,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         return updatedUser;
     }
 
-    [HttpDelete("users/{userId}")]
+    [HttpDelete("{userId}")]
     public async Task<ActionResult> DeleteUserAsync(
         [FromRoute] long userId,
         CancellationToken cancellationToken
@@ -72,10 +69,10 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         return NoContent();
     }
 
-    [HttpPost("users/{userId}/join-tour/{tourId}")]
+    [HttpPost("{userId}/join-tour/{tourId}")]
     public async Task<IActionResult> JoinTour(
-        long userId,
-        long tourId,
+        [FromRoute] long userId,
+        [FromRoute] long tourId,
         CancellationToken cancellationToken
     )
     {
@@ -83,10 +80,10 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         return success ? Ok() : BadRequest("Cannot join tour.");
     }
 
-    [HttpPost("users/{userId}/leave-tour/{tourId}")]
+    [HttpPost("{userId}/leave-tour/{tourId}")]
     public async Task<IActionResult> LeaveTour(
-        long userId,
-        long tourId,
+        [FromRoute] long userId,
+        [FromRoute] long tourId,
         CancellationToken cancellationToken
     )
     {
@@ -94,11 +91,11 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
         return success ? Ok() : BadRequest("Cannot leave tour.");
     }
 
-    [HttpPost("users/{userId}/tours/{tourId}/equipment/{equipmentId}/check")]
+    [HttpPost("{userId}/tours/{tourId}/equipment/{equipmentId}/check")]
     public async Task<IActionResult> CheckItem(
-        long userId,
-        long tourId,
-        long equipmentId,
+        [FromRoute] long userId,
+        [FromRoute] long tourId,
+        [FromRoute] long equipmentId,
         [FromQuery] bool isChecked,
         CancellationToken cancellationToken
     )
@@ -116,5 +113,20 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
     private static bool EmailIsValid(string email)
     {
         return System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+    }
+
+    [HttpGet("{userId}/tours/{tourId}/is-joined")]
+    public async Task<IActionResult> IsUserJoinedTour(
+        [FromRoute] long userId,
+        [FromRoute] long tourId,
+        CancellationToken cancellationToken
+    )
+    {
+        var isJoined = await userReadService.IsUserJoinedTourAsync(
+            userId,
+            tourId,
+            cancellationToken
+        );
+        return Ok(new { signedUp = isJoined });
     }
 }

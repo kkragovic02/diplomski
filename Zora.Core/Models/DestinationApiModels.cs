@@ -1,4 +1,4 @@
-﻿namespace Zora.Core.Features.DestinationServices.Models;
+﻿namespace Zora.Core.Models;
 
 public record Destination(long Id, string Name, string Description);
 

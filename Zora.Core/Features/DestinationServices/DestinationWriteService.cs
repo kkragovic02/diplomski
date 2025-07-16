@@ -1,10 +1,7 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
-using Zora.Core.Features.DestinationServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.DestinationServices;
 
@@ -24,7 +21,7 @@ internal class DestinationWriteService(ZoraDbContext dbContext) : IDestinationWr
         dbContext.Destinations.Add(destinationModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToDestination(destinationModel);
+        return destinationModel.MapToDestination();
     }
 
     public async Task<Destination?> UpdateAsync(
@@ -50,7 +47,7 @@ internal class DestinationWriteService(ZoraDbContext dbContext) : IDestinationWr
         dbContext.Destinations.Update(destinationToUpdate);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToDestination(destinationToUpdate);
+        return destinationToUpdate.MapToDestination();
     }
 
     public async Task DeleteAsync(long destinationId, CancellationToken cancellationToken)
@@ -58,14 +55,5 @@ internal class DestinationWriteService(ZoraDbContext dbContext) : IDestinationWr
         await dbContext
             .Destinations.Where(destination => destination.Id == destinationId)
             .ExecuteDeleteAsync(cancellationToken);
-    }
-
-    private static Destination MapToDestination(DestinationModel destinationModel)
-    {
-        return new Destination(
-            destinationModel.Id,
-            destinationModel.Name,
-            destinationModel.Description
-        );
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Zora.Core.Features.AttractionServices.Models;
+﻿namespace Zora.Core.Models;
 
 public record Attraction(long Id, string Name);
 

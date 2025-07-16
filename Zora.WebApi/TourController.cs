@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Zora.Core.Features.TourServices;
-using Zora.Core.Features.TourServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.WebApi;
 
@@ -12,17 +10,31 @@ namespace Zora.WebApi;
 public class TourController(ITourWriteService tourWriteService, ITourReadService tourReadService)
     : ControllerBase
 {
-    [HttpPost("tours")]
-    public async Task<ActionResult<Tour>> CreateTour(
-        [FromBody] CreateTour createTour,
+    [HttpGet]
+    public async Task<ActionResult<List<Tour>>> GetAllTours(CancellationToken cancellationToken)
+    {
+        var tours = await tourReadService.GetAllAsync(cancellationToken);
+        return Ok(tours);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTour(
+        CreateTour createTour,
         CancellationToken cancellationToken
     )
     {
-        var result = await tourWriteService.CreateAsync(createTour, cancellationToken);
-        return CreatedAtAction(nameof(GetTourById), new { tourId = result.Id }, result);
+        try
+        {
+            var createdTour = await tourWriteService.CreateAsync(createTour, cancellationToken);
+            return Ok(createdTour);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpGet("tours/{tourId:long}")]
+    [HttpGet("{tourId:long}")]
     public async Task<ActionResult<Tour>> GetTourById(
         long tourId,
         CancellationToken cancellationToken
@@ -33,7 +45,7 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         return Ok(tour);
     }
 
-    [HttpGet("tours/user/{userId:long}")]
+    [HttpGet("user/{userId:long}")]
     public async Task<ActionResult<List<Tour>>> GetAllToursForUser(
         long userId,
         CancellationToken cancellationToken
@@ -43,23 +55,30 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         return Ok(tours);
     }
 
-    [HttpPut("tours/{tourId:long}")]
+    [HttpPut("{tourId:long}")]
     public async Task<ActionResult<Tour>> UpdateTour(
         long tourId,
         [FromBody] UpdateTour updateTour,
         CancellationToken cancellationToken
     )
     {
-        var updated = await tourWriteService.UpdateAsync(tourId, updateTour, cancellationToken);
-        if (updated is null)
+        try
         {
-            return NotFound();
-        }
+            var updated = await tourWriteService.UpdateAsync(tourId, updateTour, cancellationToken);
+            if (updated is null)
+            {
+                return NotFound();
+            }
 
-        return Ok(updated);
+            return Ok(updated);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpDelete("tours/{tourId:long}")]
+    [HttpDelete("{tourId:long}")]
     public async Task<ActionResult> DeleteTour(long tourId, CancellationToken cancellationToken)
     {
         var success = await tourWriteService.DeleteAsync(tourId, cancellationToken);
@@ -69,5 +88,38 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         }
 
         return NoContent();
+    }
+
+    [HttpGet("guide-info/{tourId:long}")]
+    public async Task<ActionResult<TourWithGuideInfo>> GetTourWithGuideInfo(
+        long tourId,
+        CancellationToken cancellationToken
+    )
+    {
+        var tour = await tourReadService.GetWithGuideInfoAsync(tourId, cancellationToken);
+
+        if (tour is null)
+            return NotFound();
+
+        return Ok(tour);
+    }
+
+    [HttpGet("calendar")]
+    public async Task<ActionResult<List<TourForCalendar>>> GetToursForCalendar(
+        CancellationToken cancellationToken
+    )
+    {
+        var tours = await tourReadService.GetAllForCalendarAsync(cancellationToken);
+        return Ok(tours);
+    }
+
+    [HttpGet("guide/{guideId}")]
+    public async Task<ActionResult<List<Tour>>> GetToursForGuide(
+        long guideId,
+        CancellationToken cancellationToken
+    )
+    {
+        var tours = await tourReadService.GetAllForGuideAsync(guideId, cancellationToken);
+        return Ok(tours);
     }
 }

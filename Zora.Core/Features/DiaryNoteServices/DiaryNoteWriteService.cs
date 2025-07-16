@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
-using Zora.Core.Features.DiaryNoteServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.DiaryNoteServices;
 
@@ -28,7 +24,7 @@ internal class DiaryNoteWriteService(ZoraDbContext dbContext) : IDiaryNoteWriteS
         dbContext.DiaryNotes.Add(diaryNoteModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToDiaryNote(diaryNoteModel);
+        return diaryNoteModel.MapToDiaryNote();
     }
 
     public async Task<DiaryNote?> UpdateAsync(
@@ -53,7 +49,7 @@ internal class DiaryNoteWriteService(ZoraDbContext dbContext) : IDiaryNoteWriteS
         dbContext.DiaryNotes.Update(diaryNoteModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToDiaryNote(diaryNoteModel);
+        return diaryNoteModel.MapToDiaryNote();
     }
 
     public async Task DeleteAsync(long diaryNoteId, CancellationToken cancellationToken)
@@ -61,17 +57,5 @@ internal class DiaryNoteWriteService(ZoraDbContext dbContext) : IDiaryNoteWriteS
         await dbContext
             .DiaryNotes.Where(diaryNote => diaryNote.Id == diaryNoteId)
             .ExecuteDeleteAsync(cancellationToken);
-    }
-
-    private static DiaryNote MapToDiaryNote(DiaryNoteModel diaryNoteModel)
-    {
-        return new DiaryNote(
-            diaryNoteModel.Id,
-            diaryNoteModel.Title,
-            diaryNoteModel.Content,
-            diaryNoteModel.CreatedAt.DateTime,
-            diaryNoteModel.UserId,
-            diaryNoteModel.TourId
-        );
     }
 }

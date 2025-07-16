@@ -1,10 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Zora.Core.Features.DestinationServices.Models;
+﻿using Zora.Core.Models;
 
 namespace Zora.Core.Features.DestinationServices;
 
 public interface IDestinationReadService
 {
     Task<Destination?> GetByIdAsync(long id, CancellationToken cancellationToken);
+    Task<List<Destination>> GetAllAsync(CancellationToken cancellationToken);
 }

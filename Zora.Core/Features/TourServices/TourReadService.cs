@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
-using Zora.Core.Database.Models;
-using Zora.Core.Features.TourServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.TourServices;
 
@@ -16,11 +12,12 @@ internal class TourReadService(ZoraDbContext dbContext) : ITourReadService
             .Tours.AsNoTracking()
             .Include(tour => tour.Equipment)
             .Include(tour => tour.Attractions)
+            .Include(tour => tour.Destination)
             .FirstOrDefaultAsync(tour => tour.Id == tourId, cancellationToken);
 
         return tourModel is null
             ? throw new KeyNotFoundException("Tour not found")
-            : MapToTour(tourModel);
+            : tourModel.MapToTour();
     }
 
     public async Task<List<Tour>> GetAllForUserAsync(
@@ -32,25 +29,76 @@ internal class TourReadService(ZoraDbContext dbContext) : ITourReadService
             .Tours.AsNoTracking()
             .Include(tour => tour.Equipment)
             .Include(tour => tour.Attractions)
+            .Include(tour => tour.Destination)
             .Where(tour => tour.Participants.Any(u => u.Id == userId))
             .ToListAsync(cancellationToken);
 
-        return tourModels.Select(MapToTour).ToList();
+        return tourModels.Select(tour => tour.MapToTour()).ToList();
     }
 
-    private static Tour MapToTour(TourModel tourModel) =>
-        new Tour(
-            tourModel.Id,
-            tourModel.Name,
-            tourModel.Description,
-            tourModel.Distance,
-            tourModel.Duration,
-            tourModel.ElevationGain,
-            tourModel.AvailableSpots,
-            tourModel.ScheduledAt.DateTime,
-            tourModel.DestinationId,
-            tourModel.GuideId,
-            tourModel.Equipment.Select(e => e.Id).ToList(),
-            tourModel.Attractions.Select(a => a.Id).ToList()
+    public async Task<TourWithGuideInfo?> GetWithGuideInfoAsync(
+        long tourId,
+        CancellationToken cancellationToken
+    )
+    {
+        var tour = await dbContext
+            .Tours.AsNoTracking()
+            .Include(t => t.Destination)
+            .Include(t => t.Guide) // assuming navigation property Guide exists
+            .FirstOrDefaultAsync(t => t.Id == tourId, cancellationToken);
+
+        if (tour is null)
+        {
+            return null;
+        }
+
+        return new TourWithGuideInfo(
+            tour.Id,
+            tour.Name,
+            tour.Destination?.Name ?? "Unknown",
+            tour.Distance,
+            tour.ElevationGain,
+            tour.AvailableSpots,
+            tour.ScheduledAt.DateTime,
+            tour.Guide?.Email ?? "Unknown",
+            tour.Description
         );
+    }
+
+    public async Task<List<Tour>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var tours = await dbContext
+            .Tours.Include(t => t.Equipment)
+            .Include(t => t.Attractions)
+            .ToListAsync(cancellationToken);
+
+        return tours.Select(t => t.MapToTour()).ToList();
+    }
+
+    public async Task<List<TourForCalendar>> GetAllForCalendarAsync(
+        CancellationToken cancellationToken
+    )
+    {
+        var tours = await dbContext
+            .Tours.Include(t => t.Destination)
+            .ToListAsync(cancellationToken);
+
+        return tours.Select(t => t.MapToCalendarDto()).ToList();
+    }
+
+    public async Task<List<Tour>> GetAllForGuideAsync(
+        long guideId,
+        CancellationToken cancellationToken
+    )
+    {
+        var tourModels = await dbContext
+            .Tours.AsNoTracking()
+            .Include(tour => tour.Equipment)
+            .Include(tour => tour.Attractions)
+            .Include(tour => tour.Destination)
+            .Where(tour => tour.GuideId == guideId)
+            .ToListAsync(cancellationToken);
+
+        return tourModels.Select(tour => tour.MapToTour()).ToList();
+    }
 }

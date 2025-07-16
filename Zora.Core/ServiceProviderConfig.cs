@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
 using Zora.Core.Features.AttractionServices;
+using Zora.Core.Features.Auth;
+using Zora.Core.Features.AuthService;
+using Zora.Core.Features.CheckListItemServices;
 using Zora.Core.Features.DestinationServices;
 using Zora.Core.Features.DiaryNoteServices;
 using Zora.Core.Features.EquipmentServices;
@@ -46,6 +49,11 @@ public static partial class ServiceProviderConfig
 
         services.AddScoped<IDiaryNoteReadService, DiaryNoteReadService>();
         services.AddScoped<IDiaryNoteWriteService, DiaryNoteWriteService>();
+
+        services.AddScoped<IAuthService, AuthService>();
+
+        services.AddScoped<ICheckListReadService, CheckListReadService>();
+        services.AddScoped<ICheckListWriteService, CheckListWriteService>();
 
         return services;
     }

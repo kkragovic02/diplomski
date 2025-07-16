@@ -1,17 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Zora.Core.Features.AttractionServices;
-using Zora.Core.Features.AttractionServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.WebApi;
 
 [ApiController]
 [Route("[controller]")]
 public class AttractionsController(
-    IAttractionReadService readService,
-    IAttractionWriteService writeService
+    IAttractionReadService attractionReadService,
+    IAttractionWriteService attractionWriteService
 ) : ControllerBase
 {
     [HttpGet]
@@ -26,11 +23,14 @@ public class AttractionsController(
 
         if (tourId.HasValue)
         {
-            attractions = await readService.GetByTourIdAsync(tourId.Value, cancellationToken);
+            attractions = await attractionReadService.GetByTourIdAsync(
+                tourId.Value,
+                cancellationToken
+            );
         }
         else
         {
-            attractions = await readService.GetAllAsync(cancellationToken);
+            attractions = await attractionReadService.GetAllAsync(cancellationToken);
         }
 
         return Ok(attractions);
@@ -42,7 +42,10 @@ public class AttractionsController(
         CancellationToken cancellationToken
     )
     {
-        var attraction = await writeService.CreateAsync(createAttraction, cancellationToken);
+        var attraction = await attractionWriteService.CreateAsync(
+            createAttraction,
+            cancellationToken
+        );
 
         return CreatedAtAction(
             nameof(CreateAttractionAsync),
@@ -52,13 +55,17 @@ public class AttractionsController(
     }
 
     [HttpPut("{id:long}")]
-    public async Task<ActionResult<Attraction>> Update(
+    public async Task<ActionResult<Attraction>> UpdateAttractionAsync(
         [FromRoute] long id,
         [FromBody] UpdateAttraction updatedAttraction,
         CancellationToken cancellationToken
     )
     {
-        var updated = await writeService.UpdateAsync(id, updatedAttraction, cancellationToken);
+        var updated = await attractionWriteService.UpdateAsync(
+            id,
+            updatedAttraction,
+            cancellationToken
+        );
 
         if (updated is null)
         {
@@ -69,12 +76,12 @@ public class AttractionsController(
     }
 
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(
+    public async Task<IActionResult> DeleteAttractionAsync(
         [FromRoute] long id,
         CancellationToken cancellationToken
     )
     {
-        await writeService.DeleteAsync(id, cancellationToken);
+        await attractionWriteService.DeleteAsync(id, cancellationToken);
 
         return NoContent();
     }

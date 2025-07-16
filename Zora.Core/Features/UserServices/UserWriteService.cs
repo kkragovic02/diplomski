@@ -1,26 +1,36 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
-using Zora.Core.Features.UserServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.UserServices;
 
-internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDbContext dbContext)
-    : IUserWriteService
+internal class UserWriteService(
+    PasswordHasher<UserModel> passwordHasher,
+    ZoraDbContext dbContext,
+    ILogger<UserWriteService> logger
+) : IUserWriteService
 {
+    private const string JoinTour = "join";
+    private const string LeaveTour = "leave";
+
     public async Task<User> CreateAsync(CreateUser createUser, CancellationToken cancellationToken)
     {
-        var user = MapToUserModel(createUser);
-        user.PasswordHash = passwordHasher.HashPassword(user, createUser.Password);
+        var userModel = new UserModel
+        {
+            Name = createUser.Name,
+            Email = createUser.Email,
+            Role = Role.Member,
+        };
 
-        dbContext.Users.Add(user);
+        userModel.PasswordHash = passwordHasher.HashPassword(userModel, createUser.Password);
+
+        dbContext.Users.Add(userModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new User(user.Id, user.Name, user.Email, user.Role);
+        return userModel.MapToUser();
     }
 
     public async Task<User?> UpdateAsync(
@@ -29,28 +39,28 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
         CancellationToken cancellationToken
     )
     {
-        var user = await dbContext.Users.FirstOrDefaultAsync(
+        var userModel = await dbContext.Users.FirstOrDefaultAsync(
             user => user.Id == userId,
             cancellationToken
         );
 
-        if (user == null)
+        if (userModel == null)
         {
             return null;
         }
 
-        user.Name = updateUser.Name ?? user.Name;
-        user.Email = updateUser.Email ?? user.Email;
-        user.Role = updateUser.Role ?? user.Role;
+        userModel.Name = updateUser.Name ?? userModel.Name;
+        userModel.Email = updateUser.Email ?? userModel.Email;
+        userModel.Role = updateUser.Role ?? userModel.Role;
         if (updateUser.Password != null)
         {
-            user.PasswordHash = passwordHasher.HashPassword(user, updateUser.Password);
+            userModel.PasswordHash = passwordHasher.HashPassword(userModel, updateUser.Password);
         }
 
-        dbContext.Users.Update(user);
+        dbContext.Users.Update(userModel);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new User(user.Id, user.Name, user.Email, user.Role);
+        return userModel.MapToUser();
     }
 
     public Task DeleteAsync(long userId, CancellationToken cancellationToken)
@@ -60,33 +70,20 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
             .ExecuteDeleteAsync(cancellationToken);
     }
 
-    private static UserModel MapToUserModel(CreateUser createUser)
-    {
-        return new UserModel
-        {
-            Name = createUser.Name,
-            Email = createUser.Email,
-            Role = Role.Member,
-        };
-    }
-
     public async Task<bool> JoinTourAsync(
         long userId,
         long tourId,
         CancellationToken cancellationToken
     )
     {
-        var user = await dbContext
-            .Users.Include(u => u.UserTours)
-            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-        var tour = await dbContext
-            .Tours.Include(t => t.Participants)
-            .FirstOrDefaultAsync(t => t.Id == tourId, cancellationToken);
+        var (userModel, tourModel) = await GetUserAndTourModels(userId, tourId, cancellationToken);
 
-        if (user == null || tour == null || tour.Participants.Contains(user))
+        if (!IsValid(userId, tourId, userModel, tourModel, JoinTour))
+        {
             return false;
+        }
 
-        tour.Participants.Add(user);
+        tourModel!.Participants.Add(userModel!);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return true;
@@ -98,17 +95,14 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
         CancellationToken cancellationToken
     )
     {
-        var user = await dbContext
-            .Users.Include(u => u.UserTours)
-            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-        var tour = await dbContext
-            .Tours.Include(t => t.Participants)
-            .FirstOrDefaultAsync(t => t.Id == tourId, cancellationToken);
+        var (userModel, tourModel) = await GetUserAndTourModels(userId, tourId, cancellationToken);
 
-        if (user == null || tour == null || !tour.Participants.Contains(user))
+        if (!IsValid(userId, tourId, userModel, tourModel, LeaveTour))
+        {
             return false;
+        }
 
-        tour.Participants.Remove(user);
+        tourModel!.Participants.Remove(userModel!);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return true;
@@ -122,12 +116,12 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
         CancellationToken cancellationToken
     )
     {
-        var item = await dbContext.UserCheckLists.FirstOrDefaultAsync(
+        var checkListItemModel = await dbContext.UserCheckLists.FirstOrDefaultAsync(
             i => i.UserId == userId && i.TourId == tourId && i.EquipmentId == equipmentId,
             cancellationToken
         );
 
-        if (item == null)
+        if (checkListItemModel == null)
         {
             dbContext.UserCheckLists.Add(
                 new CheckListItemModel
@@ -141,10 +135,84 @@ internal class UserWriteService(PasswordHasher<UserModel> passwordHasher, ZoraDb
         }
         else
         {
-            item.IsChecked = isChecked;
-            dbContext.UserCheckLists.Update(item);
+            checkListItemModel.IsChecked = isChecked;
+            dbContext.UserCheckLists.Update(checkListItemModel);
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<(UserModel? userModel, TourModel? tourModel)> GetUserAndTourModels(
+        long userId,
+        long tourId,
+        CancellationToken cancellationToken
+    )
+    {
+        var userModelTask = dbContext
+            .Users.Include(u => u.UserTours)
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        var tourModelTask = dbContext
+            .Tours.Include(t => t.Participants)
+            .FirstOrDefaultAsync(t => t.Id == tourId, cancellationToken);
+
+        await Task.WhenAll(userModelTask, tourModelTask);
+
+        var userModel = await userModelTask;
+        var tourModel = await tourModelTask;
+        return (userModel, tourModel);
+    }
+
+    private bool IsValid(
+        long userId,
+        long tourId,
+        UserModel? userModel,
+        TourModel? tourModel,
+        string choice
+    )
+    {
+        if (userModel == null)
+        {
+            logger.LogError("User {UserId} not found", userId);
+            return false;
+        }
+
+        if (tourModel == null)
+        {
+            logger.LogError("Tour with ID {TourId} does not exist", tourId);
+            return false;
+        }
+
+        var userInTour = tourModel.Participants.Contains(userModel);
+
+        if (choice == JoinTour)
+        {
+            if (userInTour)
+            {
+                logger.LogError(
+                    "User {UserId} is already signed up for Tour {TourId}",
+                    userId,
+                    tourId
+                );
+                return false;
+            }
+        }
+        else if (choice == LeaveTour)
+        {
+            if (!userInTour)
+            {
+                logger.LogWarning(
+                    "User {UserId} is already not signed up for Tour {TourId}",
+                    userId,
+                    tourId
+                );
+                return false;
+            }
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(choice));
+        }
+
+        return true;
     }
 }

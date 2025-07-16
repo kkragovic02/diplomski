@@ -1,6 +1,6 @@
 ﻿using Zora.Core.Database.Models;
 
-namespace Zora.Core.Features.UserServices.Models;
+namespace Zora.Core.Models;
 
 public record User(long Id, string Name, string Email, Role Role);
 

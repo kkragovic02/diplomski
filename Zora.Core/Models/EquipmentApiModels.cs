@@ -1,4 +1,4 @@
-﻿namespace Zora.Core.Features.EquipmentServices.Models;
+﻿namespace Zora.Core.Models;
 
 public record Equipment(long Id, string Name);
 

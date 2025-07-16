@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Zora.Core.Features.DiaryNoteServices.Models;
+﻿using Zora.Core.Models;
 
 namespace Zora.Core.Features.DiaryNoteServices;
 

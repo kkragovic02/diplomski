@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Zora.Core.Database.Models;
 
@@ -10,7 +9,7 @@ public class DestinationModel
     [MaxLength(50)]
     public required string Name { get; set; }
 
-    [MaxLength(500)]
+    [MaxLength(2000)]
     public required string Description { get; set; }
 
     public ICollection<TourModel> Tours { get; set; } = new List<TourModel>();

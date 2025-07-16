@@ -68,7 +68,7 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("UserTour", "zora");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.Attraction", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.AttractionModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,7 +89,7 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("Attraction", "zora");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.CheckListItem", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.CheckListItemModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,7 +120,7 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("CheckListItem", "zora");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.Destination", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.DestinationModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -130,8 +130,8 @@ namespace Zora.Core.Database.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -146,7 +146,7 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("Destination", "zora");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.DiaryNote", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.DiaryNoteModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,7 +190,7 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("DiaryNote", "zora");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.Equipment", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.EquipmentModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -211,7 +211,7 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("Equipment", "zora");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.Tour", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -306,13 +306,13 @@ namespace Zora.Core.Database.Migrations
 
             modelBuilder.Entity("TourAttraction", b =>
                 {
-                    b.HasOne("Zora.Core.Database.Models.Attraction", null)
+                    b.HasOne("Zora.Core.Database.Models.AttractionModel", null)
                         .WithMany()
                         .HasForeignKey("AttractionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Zora.Core.Database.Models.Tour", null)
+                    b.HasOne("Zora.Core.Database.Models.TourModel", null)
                         .WithMany()
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -321,13 +321,13 @@ namespace Zora.Core.Database.Migrations
 
             modelBuilder.Entity("TourEquipment", b =>
                 {
-                    b.HasOne("Zora.Core.Database.Models.Equipment", null)
+                    b.HasOne("Zora.Core.Database.Models.EquipmentModel", null)
                         .WithMany()
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Zora.Core.Database.Models.Tour", null)
+                    b.HasOne("Zora.Core.Database.Models.TourModel", null)
                         .WithMany()
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -336,7 +336,7 @@ namespace Zora.Core.Database.Migrations
 
             modelBuilder.Entity("UserTour", b =>
                 {
-                    b.HasOne("Zora.Core.Database.Models.Tour", null)
+                    b.HasOne("Zora.Core.Database.Models.TourModel", null)
                         .WithMany()
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -349,15 +349,15 @@ namespace Zora.Core.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.CheckListItem", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.CheckListItemModel", b =>
                 {
-                    b.HasOne("Zora.Core.Database.Models.Equipment", "Equipment")
+                    b.HasOne("Zora.Core.Database.Models.EquipmentModel", "Equipment")
                         .WithMany()
                         .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Zora.Core.Database.Models.Tour", "Tour")
+                    b.HasOne("Zora.Core.Database.Models.TourModel", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -376,9 +376,9 @@ namespace Zora.Core.Database.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.DiaryNote", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.DiaryNoteModel", b =>
                 {
-                    b.HasOne("Zora.Core.Database.Models.Tour", "Tour")
+                    b.HasOne("Zora.Core.Database.Models.TourModel", "Tour")
                         .WithMany("DiaryNotes")
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -395,9 +395,9 @@ namespace Zora.Core.Database.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.Tour", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
-                    b.HasOne("Zora.Core.Database.Models.Destination", "Destination")
+                    b.HasOne("Zora.Core.Database.Models.DestinationModel", "Destination")
                         .WithMany("Tours")
                         .HasForeignKey("DestinationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -414,12 +414,12 @@ namespace Zora.Core.Database.Migrations
                     b.Navigation("Guide");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.Destination", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.DestinationModel", b =>
                 {
                     b.Navigation("Tours");
                 });
 
-            modelBuilder.Entity("Zora.Core.Database.Models.Tour", b =>
+            modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
                     b.Navigation("DiaryNotes");
                 });

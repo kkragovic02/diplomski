@@ -1,8 +1,6 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
-using Zora.Core.Features.DestinationServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.DestinationServices;
 
@@ -13,12 +11,17 @@ internal class DestinationReadService(ZoraDbContext dbContext) : IDestinationRea
         CancellationToken cancellationToken
     )
     {
-        var destination = await dbContext
+        var destinationModel = await dbContext
             .Destinations.AsNoTracking()
             .FirstOrDefaultAsync(destination => destination.Id == destinationId, cancellationToken);
 
-        return destination == null
-            ? null
-            : new Destination(destination.Id, destination.Name, destination.Description);
+        return destinationModel == null ? null : destinationModel.MapToDestination();
+    }
+
+    public async Task<List<Destination>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        var models = await dbContext.Destinations.AsNoTracking().ToListAsync(cancellationToken);
+
+        return models.Select(m => m.MapToDestination()).ToList();
     }
 }

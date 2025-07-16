@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
-using Zora.Core.Database.Models;
-using Zora.Core.Features.UserServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.UserServices;
 
@@ -14,25 +8,33 @@ internal class UserReadService(ZoraDbContext dbContext) : IUserReadService
 {
     public async Task<List<User>> GetAllAsync(
         CancellationToken cancellationToken,
-        string? UserName = null
+        string? userName = null
     )
     {
-        var users = await dbContext
-            .Users.Select(u => MapToUseDto(u))
+        var userModels = await dbContext
+            .Users.Select(user => user.MapToUser())
             .AsNoTracking()
             .ToListAsync(cancellationToken: cancellationToken);
 
-        var filteredUsers = string.IsNullOrEmpty(UserName)
-            ? users
-            : users
-                .Where(u => u.Name.Contains(UserName, StringComparison.OrdinalIgnoreCase))
+        var filteredUsers = string.IsNullOrEmpty(userName)
+            ? userModels
+            : userModels
+                .Where(u => u.Name.Contains(userName, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
         return filteredUsers;
     }
 
-    private static User MapToUseDto(UserModel userModel)
+    public async Task<bool> IsUserJoinedTourAsync(
+        long userId,
+        long tourId,
+        CancellationToken cancellationToken
+    )
     {
-        return new User(userModel.Id, userModel.Name, userModel.Email, userModel.Role);
+        return await dbContext
+            .Users.AsNoTracking()
+            .Where(u => u.Id == userId)
+            .SelectMany(u => u.UserTours)
+            .AnyAsync(t => t.Id == tourId, cancellationToken);
     }
 }

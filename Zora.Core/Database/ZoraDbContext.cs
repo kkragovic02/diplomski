@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Zora.Core.Database.Models;
 
@@ -81,7 +80,7 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
         builder.ToTable("Destination");
         builder.Property(d => d.Name).IsRequired().HasMaxLength(50);
         builder.HasIndex(d => d.Name).IsUnique();
-        builder.Property(d => d.Description).HasMaxLength(500);
+        builder.Property(d => d.Description).HasMaxLength(4000);
 
         builder
             .HasMany(d => d.Tours)

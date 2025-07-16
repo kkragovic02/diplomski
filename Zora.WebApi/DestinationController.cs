@@ -1,15 +1,13 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Zora.Core.Features.DestinationServices;
-using Zora.Core.Features.DestinationServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.WebApi;
 
 [ApiController]
 [Route("[controller]")]
-public class DestinationsController(
+public class DestinationController(
     IDestinationReadService destinationReadService,
     IDestinationWriteService destinationWriteService
 ) : ControllerBase
@@ -33,6 +31,16 @@ public class DestinationsController(
         }
 
         return destination;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(List<Destination>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<Destination>>> GetAllDestinationsAsync(
+        CancellationToken cancellationToken
+    )
+    {
+        var destinations = await destinationReadService.GetAllAsync(cancellationToken);
+        return Ok(destinations);
     }
 
     [HttpPost]

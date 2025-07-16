@@ -1,11 +1,8 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zora.Core.Database;
 using Zora.Core.Database.Models;
-using Zora.Core.Features.AttractionServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.AttractionServices;
 
@@ -29,7 +26,7 @@ internal class AttractionWriteService(
             attractionModel.Id
         );
 
-        return MapToAttraction(attractionModel);
+        return attractionModel.MapToAttraction();
     }
 
     public async Task<Attraction?> UpdateAsync(
@@ -61,7 +58,7 @@ internal class AttractionWriteService(
             attractionId
         );
 
-        return MapToAttraction(attractionToUpdate);
+        return attractionToUpdate.MapToAttraction();
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
@@ -71,10 +68,5 @@ internal class AttractionWriteService(
             .ExecuteDeleteAsync(cancellationToken);
 
         logger.LogInformation("Attraction with ID {AttractionId} deleted successfully.", id);
-    }
-
-    private static Attraction MapToAttraction(AttractionModel attractionModel)
-    {
-        return new Attraction(attractionModel.Id, attractionModel.Name);
     }
 }

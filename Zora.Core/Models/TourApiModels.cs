@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Zora.Core.Features.TourServices.Models;
+namespace Zora.Core.Models;
 
 public record CreateTour(
     string Name,
@@ -40,7 +39,31 @@ public record Tour(
     int AvailableSpots,
     DateTime ScheduledAt,
     long DestinationId,
+    string DestinationName,
     long GuideId,
     List<long> AttractionIds,
     List<long> EquipmentIds
+);
+
+public record TourWithGuideInfo(
+    long Id,
+    string Name,
+    string Destination,
+    double Distance,
+    double ElevationGain,
+    int AvailableSpots,
+    DateTime ScheduledAt,
+    string GuideEmail,
+    string Description
+);
+
+public record TourForCalendar(
+    long Id,
+    string Name,
+    double Distance,
+    double ElevationGain,
+    int AvailableSpots,
+    DateTime ScheduledAt,
+    long GuideId,
+    string DestinationName
 );

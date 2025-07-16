@@ -1,11 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Zora.Core.Database;
-using Zora.Core.Database.Models;
-using Zora.Core.Features.EquipmentServices.Models;
+using Zora.Core.Models;
 
 namespace Zora.Core.Features.EquipmentServices;
 
@@ -14,7 +9,7 @@ internal class EquipmentReadService(ZoraDbContext dbContext) : IEquipmentReadSer
     public async Task<IReadOnlyList<Equipment>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await dbContext
-            .Equipments.Select(equipment => MapToEquipment(equipment))
+            .Equipments.Select(equipment => equipment.MapToEquipment())
             .ToListAsync(cancellationToken);
     }
 
@@ -28,7 +23,7 @@ internal class EquipmentReadService(ZoraDbContext dbContext) : IEquipmentReadSer
             cancellationToken
         );
 
-        return equipmentModel == null ? null : MapToEquipment(equipmentModel);
+        return equipmentModel?.MapToEquipment();
     }
 
     public async Task<IReadOnlyList<Equipment>> GetByTourIdAsync(
@@ -41,11 +36,6 @@ internal class EquipmentReadService(ZoraDbContext dbContext) : IEquipmentReadSer
             .Where(equipment => equipment.Tours.Any(tour => tour.Id == tourId))
             .ToListAsync(cancellationToken);
 
-        return equipmentModels.ConvertAll(MapToEquipment);
-    }
-
-    private static Equipment MapToEquipment(EquipmentModel equipmentModel)
-    {
-        return new Equipment(equipmentModel.Id, equipmentModel.Name);
+        return equipmentModels.ConvertAll(equipment => equipment.MapToEquipment());
     }
 }

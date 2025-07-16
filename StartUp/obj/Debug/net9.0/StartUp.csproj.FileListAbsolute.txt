@@ -91,3 +91,4 @@ C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\StartUp\obj\Debug\net9.0\r
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\StartUp\obj\Debug\net9.0\StartUp.pdb
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\StartUp\obj\Debug\net9.0\StartUp.genruntimeconfig.cache
 C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\StartUp\obj\Debug\net9.0\ref\StartUp.dll
+C:\Users\Kica\OneDrive\Desktop\diplomski\Backend\Zora\StartUp\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
