@@ -19,7 +19,7 @@ internal class CheckListReadService(ZoraDbContext dbContext) : ICheckListReadSer
         return item?.MapToCheckListItem();
     }
 
-    public async Task<IReadOnlyList<CheckListItem>> GetByUserAndTourAsync(
+    public async Task<IReadOnlyList<UserCheckListItemDto>> GetByUserAndTourAsync(
         long userId,
         long tourId,
         CancellationToken cancellationToken
@@ -27,9 +27,15 @@ internal class CheckListReadService(ZoraDbContext dbContext) : ICheckListReadSer
     {
         var items = await dbContext
             .UserCheckLists.Where(item => item.UserId == userId && item.TourId == tourId)
-            .Include(i => i.Equipment) // Ako ti treba ime opreme
+            .Include(i => i.Equipment)
             .ToListAsync(cancellationToken);
 
-        return items.Select(i => i.MapToCheckListItem()).ToList();
+        return items
+            .Select(i => new UserCheckListItemDto(
+                i.EquipmentId,
+                i.Equipment?.Name ?? "Nepoznata oprema",
+                i.IsChecked
+            ))
+            .ToList();
     }
 }

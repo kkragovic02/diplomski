@@ -6,13 +6,13 @@ using Zora.Core.Models;
 namespace Zora.WebApi;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/notes")]
 public class DiaryNoteController(
     IDiaryNoteReadService diaryNoteReadService,
     IDiaryNoteWriteService diaryNoteWriteService
 ) : ControllerBase
 {
-    [HttpGet("notes")]
+    [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<DiaryNote>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<DiaryNote>>> GetAllNotesAsync(
         [FromQuery] long? userId,
@@ -23,7 +23,7 @@ public class DiaryNoteController(
         return Ok(notes);
     }
 
-    [HttpGet("notes/{noteId}", Name = "GetNoteById")]
+    [HttpGet("{noteId}", Name = "GetNoteById")]
     [ProducesResponseType(typeof(DiaryNote), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DiaryNote>> GetNoteByIdAsync(
@@ -37,7 +37,7 @@ public class DiaryNoteController(
         return Ok(note);
     }
 
-    [HttpPost("notes")]
+    [HttpPost]
     [ProducesResponseType(typeof(DiaryNote), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<DiaryNote>> CreateNoteAsync(
@@ -46,10 +46,10 @@ public class DiaryNoteController(
     )
     {
         var note = await diaryNoteWriteService.CreateAsync(createNote, cancellationToken);
-        return CreatedAtAction("GetNoteById", new { noteId = note.Id }, note);
+        return Ok(note);
     }
 
-    [HttpPut("notes/{noteId}")]
+    [HttpPut("{noteId}")]
     [ProducesResponseType(typeof(DiaryNote), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DiaryNote>> UpdateNoteAsync(
@@ -68,7 +68,7 @@ public class DiaryNoteController(
         return Ok(updated);
     }
 
-    [HttpDelete("notes/{noteId}")]
+    [HttpDelete("{noteId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteNoteAsync(
         [FromRoute] long noteId,

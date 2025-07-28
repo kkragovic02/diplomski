@@ -211,6 +211,34 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("Equipment", "zora");
                 });
 
+            modelBuilder.Entity("Zora.Core.Database.Models.GalleryModel", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourId");
+
+                    b.ToTable("Gallery", "zora");
+                });
+
             modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
                     b.Property<long>("Id")
@@ -262,8 +290,7 @@ namespace Zora.Core.Database.Migrations
 
                     b.HasIndex("GuideId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("Name");
 
                     b.ToTable("Tour", "zora");
                 });
@@ -395,6 +422,17 @@ namespace Zora.Core.Database.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Zora.Core.Database.Models.GalleryModel", b =>
+                {
+                    b.HasOne("Zora.Core.Database.Models.TourModel", "Tour")
+                        .WithMany("GalleryImages")
+                        .HasForeignKey("TourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tour");
+                });
+
             modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
                     b.HasOne("Zora.Core.Database.Models.DestinationModel", "Destination")
@@ -422,6 +460,8 @@ namespace Zora.Core.Database.Migrations
             modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
                     b.Navigation("DiaryNotes");
+
+                    b.Navigation("GalleryImages");
                 });
 
             modelBuilder.Entity("Zora.Core.Database.Models.UserModel", b =>

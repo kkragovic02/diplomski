@@ -63,9 +63,18 @@ internal class AttractionWriteService(
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
-        await dbContext
-            .Attractions.Where(attraction => attraction.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+        var attraction = await dbContext
+            .Attractions.Include(a => a.Tours)
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+
+        if (attraction == null)
+            return;
+
+        attraction.Tours.Clear();
+
+        dbContext.Attractions.Remove(attraction);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Attraction with ID {AttractionId} deleted successfully.", id);
     }

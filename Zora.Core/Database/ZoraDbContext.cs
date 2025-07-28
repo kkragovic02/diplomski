@@ -22,6 +22,8 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
 
     public DbSet<AttractionModel> Attractions => Set<AttractionModel>();
 
+    public DbSet<GalleryModel> Galleries => Set<GalleryModel>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -35,6 +37,7 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
         ConfigureDiaryNote(modelBuilder.Entity<DiaryNoteModel>());
         ConfigureEquipment(modelBuilder.Entity<EquipmentModel>());
         ConfigureAttraction(modelBuilder.Entity<AttractionModel>());
+        ConfigureGallery(modelBuilder.Entity<GalleryModel>());
     }
 
     private void ConfigureUser(EntityTypeBuilder<UserModel> builder)
@@ -93,7 +96,7 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
     {
         builder.ToTable("Tour");
         builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
-        builder.HasIndex(t => t.Name).IsUnique();
+        builder.HasIndex(t => t.Name);
         builder.Property(t => t.Description).IsRequired().HasMaxLength(500);
         builder.Property(t => t.Distance).IsRequired();
         builder.Property(t => t.Duration).IsRequired();
@@ -202,5 +205,20 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
                     j.ToTable("TourAttraction");
                 }
             );
+    }
+
+    private void ConfigureGallery(EntityTypeBuilder<GalleryModel> builder)
+    {
+        builder.ToTable("Gallery");
+
+        builder.Property(g => g.FileName).IsRequired().HasMaxLength(100);
+
+        builder.Property(g => g.FilePath).IsRequired().HasMaxLength(500);
+
+        builder
+            .HasOne(g => g.Tour)
+            .WithMany(t => t.GalleryImages)
+            .HasForeignKey(g => g.TourId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

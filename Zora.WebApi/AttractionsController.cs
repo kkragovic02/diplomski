@@ -5,7 +5,7 @@ using Zora.Core.Models;
 namespace Zora.WebApi;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AttractionsController(
     IAttractionReadService attractionReadService,
     IAttractionWriteService attractionWriteService

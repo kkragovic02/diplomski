@@ -45,6 +45,7 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         await AddEquipmentAndAttractionsAsync(tourModel, createTour, cancellationToken);
 
         dbContext.Tours.Add(tourModel);
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return tourModel.MapToTour();
@@ -127,7 +128,6 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         if (tour == null)
             return false;
 
-        // Obriši sve CheckListItem-e povezane sa ovom turom
         var checkListItems = await dbContext
             .UserCheckLists.Where(c => c.TourId == tourId)
             .ToListAsync(cancellationToken);
@@ -137,11 +137,31 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
             dbContext.Entry(item).State = EntityState.Deleted;
         }
 
-        // Ako ne koristiš Cascade delete, obriši ručno iz join tabela:
-        // (opciono) Ako koristiš many-to-many bez eksplicitnog modela:
         tour.Participants = [];
         tour.Equipment = [];
         tour.Attractions = [];
+        var userTours = await dbContext
+            .Set<Dictionary<string, object>>("UserTour")
+            .Where(j => EF.Property<long>(j, "TourId") == tourId)
+            .ToListAsync(cancellationToken);
+        dbContext.RemoveRange(userTours);
+
+        var tourEquipment = await dbContext
+            .Set<Dictionary<string, object>>("TourEquipment")
+            .Where(j => EF.Property<long>(j, "TourId") == tourId)
+            .ToListAsync(cancellationToken);
+        dbContext.RemoveRange(tourEquipment);
+
+        var tourAttractions = await dbContext
+            .Set<Dictionary<string, object>>("TourAttraction")
+            .Where(j => EF.Property<long>(j, "TourId") == tourId)
+            .ToListAsync(cancellationToken);
+        dbContext.RemoveRange(tourAttractions);
+
+        var notes = await dbContext
+            .DiaryNotes.Where(n => n.TourId == tourId)
+            .ToListAsync(cancellationToken);
+        dbContext.RemoveRange(notes);
 
         dbContext.Tours.Remove(tour);
 
@@ -156,26 +176,28 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         CancellationToken cancellationToken
     )
     {
-        var equipmentTask = Task.FromResult(new List<EquipmentModel>());
-        var attractionsTask = Task.FromResult(new List<AttractionModel>());
-
-        if (createTour.EquipmentIds.Count > 0)
+        if (createTour.EquipmentIds.Any())
         {
-            equipmentTask = dbContext
-                .Equipments.Where(equipment => createTour.EquipmentIds.Contains(equipment.Id))
+            var equipment = await dbContext
+                .Equipments.Where(e => createTour.EquipmentIds.Contains(e.Id))
                 .ToListAsync(cancellationToken);
+
+            foreach (var eq in equipment)
+            {
+                tourModel.Equipment.Add(eq);
+            }
         }
 
-        if (createTour.AttractionIds.Count > 0)
+        if (createTour.AttractionIds.Any())
         {
-            attractionsTask = dbContext
-                .Attractions.Where(attraction => createTour.AttractionIds.Contains(attraction.Id))
+            var attractions = await dbContext
+                .Attractions.Where(a => createTour.AttractionIds.Contains(a.Id))
                 .ToListAsync(cancellationToken);
+
+            foreach (var at in attractions)
+            {
+                tourModel.Attractions.Add(at);
+            }
         }
-
-        await Task.WhenAll(equipmentTask, attractionsTask);
-
-        tourModel.Equipment = await equipmentTask;
-        tourModel.Attractions = await attractionsTask;
     }
 }

@@ -10,6 +10,7 @@ using Zora.Core.Features.CheckListItemServices;
 using Zora.Core.Features.DestinationServices;
 using Zora.Core.Features.DiaryNoteServices;
 using Zora.Core.Features.EquipmentServices;
+using Zora.Core.Features.GalleryServices;
 using Zora.Core.Features.TourServices;
 using Zora.Core.Features.UserServices;
 
@@ -54,6 +55,9 @@ public static partial class ServiceProviderConfig
 
         services.AddScoped<ICheckListReadService, CheckListReadService>();
         services.AddScoped<ICheckListWriteService, CheckListWriteService>();
+
+        services.AddScoped<IGalleryReadService, GalleryReadService>();
+        services.AddScoped<IGalleryWriteService, GalleryWriteService>();
 
         return services;
     }

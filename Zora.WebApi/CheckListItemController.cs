@@ -65,7 +65,7 @@ public class CheckListController(
             isChecked,
             cancellationToken
         );
-        return Ok();
+        return Ok(new { success = true });
     }
 
     [HttpGet("users/{userId}/tours/{tourId}")]

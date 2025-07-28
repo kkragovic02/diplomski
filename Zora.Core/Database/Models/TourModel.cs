@@ -41,4 +41,6 @@ public class TourModel
     public ICollection<AttractionModel> Attractions { get; set; } = new List<AttractionModel>();
 
     public ICollection<UserModel> Participants { get; set; } = new List<UserModel>();
+
+    public ICollection<GalleryModel> GalleryImages { get; set; } = new List<GalleryModel>();
 }

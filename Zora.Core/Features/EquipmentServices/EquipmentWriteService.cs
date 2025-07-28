@@ -12,6 +12,23 @@ internal class EquipmentWriteService(ZoraDbContext dbContext) : IEquipmentWriteS
         CancellationToken cancellationToken
     )
     {
+        if (string.IsNullOrWhiteSpace(createEquipment.Name))
+        {
+            throw new ArgumentException("Naziv opreme je obavezan.");
+        }
+
+        var exists = await dbContext.Equipments.AnyAsync(
+            e => e.Name == createEquipment.Name,
+            cancellationToken
+        );
+
+        if (exists)
+        {
+            throw new InvalidOperationException(
+                $"Oprema sa nazivom '{createEquipment.Name}' već postoji."
+            );
+        }
+
         var equipmentModel = new EquipmentModel { Name = createEquipment.Name };
 
         dbContext.Equipments.Add(equipmentModel);
@@ -44,8 +61,16 @@ internal class EquipmentWriteService(ZoraDbContext dbContext) : IEquipmentWriteS
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
-        await dbContext
-            .Equipments.Where(equipment => equipment.Id == id)
-            .ExecuteDeleteAsync(cancellationToken);
+        var equipment = await dbContext
+            .Equipments.Include(e => e.Tours)
+            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+        if (equipment == null)
+            return;
+
+        equipment.Tours.Clear();
+
+        dbContext.Equipments.Remove(equipment);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

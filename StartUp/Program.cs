@@ -92,6 +92,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseCors();
 app.UseAuthentication(); // MUST be before UseAuthorization
 app.UseAuthorization();

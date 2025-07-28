@@ -51,12 +51,19 @@ public class DestinationController(
         CancellationToken cancellationToken
     )
     {
-        var destination = await destinationWriteService.CreateAsync(
-            createDestination,
-            cancellationToken
-        );
+        try
+        {
+            var destination = await destinationWriteService.CreateAsync(
+                createDestination,
+                cancellationToken
+            );
 
-        return destination;
+            return destination;
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{destinationId:long}")]

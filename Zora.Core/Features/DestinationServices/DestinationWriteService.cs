@@ -12,6 +12,17 @@ internal class DestinationWriteService(ZoraDbContext dbContext) : IDestinationWr
         CancellationToken cancellationToken
     )
     {
+        var existing = await dbContext.Destinations.AnyAsync(
+            d => d.Name == createDestination.Name,
+            cancellationToken
+        );
+
+        if (existing)
+        {
+            throw new InvalidOperationException(
+                $"Destinacija sa imenom '{createDestination.Name}' već postoji."
+            );
+        }
         var destinationModel = new DestinationModel
         {
             Name = createDestination.Name,

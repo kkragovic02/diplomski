@@ -6,7 +6,7 @@ using Zora.Core.Models;
 namespace Zora.WebApi;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class EquipmentController(
     IEquipmentReadService equipmentReadService,
     IEquipmentWriteService equipmentWriteService
@@ -56,15 +56,28 @@ public class EquipmentController(
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Equipment), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Equipment>> CreateEquipmentAsync(
-        [FromBody] CreateEquipment createEquipment,
+    public async Task<IActionResult> CreateEquipment(
+        [FromBody] CreateEquipment dto,
         CancellationToken cancellationToken
     )
     {
-        var created = await equipmentWriteService.CreateAsync(createEquipment, cancellationToken);
-        return CreatedAtAction("GetEquipmentById", new { equipmentId = created.Id }, created);
+        try
+        {
+            var result = await equipmentWriteService.CreateAsync(dto, cancellationToken);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message); // 409 - Conflict
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message); // 400 - BadRequest
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Greška na serveru: {ex.Message}");
+        }
     }
 
     [HttpPut("{equipmentId}")]

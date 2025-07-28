@@ -32,9 +32,9 @@ internal class UserReadService(ZoraDbContext dbContext) : IUserReadService
     )
     {
         return await dbContext
-            .Users.AsNoTracking()
-            .Where(u => u.Id == userId)
-            .SelectMany(u => u.UserTours)
-            .AnyAsync(t => t.Id == tourId, cancellationToken);
+            .Tours.AsNoTracking()
+            .Where(t => t.Id == tourId)
+            .SelectMany(t => t.Participants)
+            .AnyAsync(u => u.Id == userId, cancellationToken);
     }
 }

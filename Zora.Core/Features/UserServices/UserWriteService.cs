@@ -82,7 +82,12 @@ internal class UserWriteService(
         {
             return false;
         }
-
+        if (tourModel!.AvailableSpots <= 0)
+        {
+            logger.LogError("Tour {TourId} is full. Cannot join.", tourId);
+            return false;
+        }
+        tourModel.AvailableSpots--;
         tourModel!.Participants.Add(userModel!);
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -101,7 +106,7 @@ internal class UserWriteService(
         {
             return false;
         }
-
+        tourModel.AvailableSpots++;
         tourModel!.Participants.Remove(userModel!);
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -148,17 +153,14 @@ internal class UserWriteService(
         CancellationToken cancellationToken
     )
     {
-        var userModelTask = dbContext
+        var userModel = await dbContext
             .Users.Include(u => u.UserTours)
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-        var tourModelTask = dbContext
+
+        var tourModel = await dbContext
             .Tours.Include(t => t.Participants)
             .FirstOrDefaultAsync(t => t.Id == tourId, cancellationToken);
 
-        await Task.WhenAll(userModelTask, tourModelTask);
-
-        var userModel = await userModelTask;
-        var tourModel = await tourModelTask;
         return (userModel, tourModel);
     }
 

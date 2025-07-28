@@ -107,7 +107,7 @@ public class UserController(IUserReadService userReadService, IUserWriteService 
             isChecked,
             cancellationToken
         );
-        return Ok();
+        return Ok(new { success = true });
     }
 
     private static bool EmailIsValid(string email)
