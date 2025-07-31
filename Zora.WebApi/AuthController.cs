@@ -38,7 +38,6 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        // Za frontend: samo obriše token sa klijenta (nije pravi logout jer JWT je stateless)
         return Ok("Logged out");
     }
 }

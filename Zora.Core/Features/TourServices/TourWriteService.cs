@@ -57,10 +57,10 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
         CancellationToken cancellationToken
     )
     {
-        var tourModel = await dbContext.Tours.FirstOrDefaultAsync(
-            tour => tour.Id == tourId,
-            cancellationToken
-        );
+        var tourModel = await dbContext
+            .Tours.Include(t => t.Equipment)
+            .Include(t => t.Attractions)
+            .FirstOrDefaultAsync(tour => tour.Id == tourId, cancellationToken);
 
         if (tourModel == null)
         {
@@ -99,16 +99,45 @@ internal class TourWriteService(ZoraDbContext dbContext) : ITourWriteService
 
         if (updateTour.EquipmentIds?.Count > 0)
         {
-            tourModel.Equipment = await dbContext
+            tourModel.Equipment.Clear();
+            var equipment = await dbContext
                 .Equipments.Where(equipment => updateTour.EquipmentIds.Contains(equipment.Id))
                 .ToListAsync(cancellationToken);
+            tourModel.Equipment = equipment;
+        }
+        if (updateTour.EquipmentIds != null)
+        {
+            tourModel.Equipment.Clear();
+            if (updateTour.EquipmentIds.Count > 0)
+            {
+                var equipment = await dbContext
+                    .Equipments.Where(equipment => updateTour.EquipmentIds.Contains(equipment.Id))
+                    .ToListAsync(cancellationToken);
+                tourModel.Equipment = equipment;
+            }
+        }
+
+        if (updateTour.AttractionIds != null)
+        {
+            tourModel.Attractions.Clear();
+            if (updateTour.AttractionIds.Count > 0)
+            {
+                var attractions = await dbContext
+                    .Attractions.Where(attraction =>
+                        updateTour.AttractionIds.Contains(attraction.Id)
+                    )
+                    .ToListAsync(cancellationToken);
+                tourModel.Attractions = attractions;
+            }
         }
 
         if (updateTour.AttractionIds?.Count > 0)
         {
-            tourModel.Attractions = await dbContext
+            tourModel.Attractions.Clear();
+            var attractions = await dbContext
                 .Attractions.Where(attraction => updateTour.AttractionIds.Contains(attraction.Id))
                 .ToListAsync(cancellationToken);
+            tourModel.Attractions = attractions;
         }
 
         tourModel.UpdatedAt = DateTimeOffset.UtcNow;

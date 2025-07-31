@@ -101,4 +101,38 @@ internal class TourReadService(ZoraDbContext dbContext) : ITourReadService
 
         return tourModels.Select(tour => tour.MapToTour()).ToList();
     }
+
+    public async Task<List<Tour>> SearchAsync(
+        TourSearchParameters parameters,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = dbContext.Tours.Include(t => t.Attractions).AsQueryable();
+
+        if (parameters.DateFrom.HasValue)
+            query = query.Where(t => t.ScheduledAt >= parameters.DateFrom.Value);
+
+        if (parameters.DateTo.HasValue)
+            query = query.Where(t => t.ScheduledAt <= parameters.DateTo.Value);
+
+        if (parameters.DistanceFrom.HasValue)
+            query = query.Where(t => t.Distance >= parameters.DistanceFrom.Value);
+
+        if (parameters.DistanceTo.HasValue)
+            query = query.Where(t => t.Distance <= parameters.DistanceTo.Value);
+
+        if (parameters.ElevationFrom.HasValue)
+            query = query.Where(t => t.ElevationGain >= parameters.ElevationFrom.Value);
+
+        if (parameters.ElevationTo.HasValue)
+            query = query.Where(t => t.ElevationGain <= parameters.ElevationTo.Value);
+
+        if (parameters.AttractionIds != null && parameters.AttractionIds.Count > 0)
+            query = query.Where(t =>
+                parameters.AttractionIds.All(id => t.Attractions.Any(a => a.Id == id))
+            );
+
+        var tours = await query.ToListAsync(cancellationToken);
+        return tours.Select(t => t.MapToTour()).ToList();
+    }
 }

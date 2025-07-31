@@ -24,6 +24,10 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
 
     public DbSet<GalleryModel> Galleries => Set<GalleryModel>();
 
+    public DbSet<StoryModel> Stories => Set<StoryModel>();
+
+    public DbSet<StoryImageModel> StoryImages => Set<StoryImageModel>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -38,6 +42,8 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
         ConfigureEquipment(modelBuilder.Entity<EquipmentModel>());
         ConfigureAttraction(modelBuilder.Entity<AttractionModel>());
         ConfigureGallery(modelBuilder.Entity<GalleryModel>());
+        ConfigureStory(modelBuilder.Entity<StoryModel>());
+        ConfigureStoryImage(modelBuilder.Entity<StoryImageModel>());
     }
 
     private void ConfigureUser(EntityTypeBuilder<UserModel> builder)
@@ -219,6 +225,39 @@ internal class ZoraDbContext(DbContextOptions<ZoraDbContext> options) : DbContex
             .HasOne(g => g.Tour)
             .WithMany(t => t.GalleryImages)
             .HasForeignKey(g => g.TourId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    private void ConfigureStory(EntityTypeBuilder<StoryModel> builder)
+    {
+        builder.ToTable("Story");
+        builder.Property(s => s.Content).IsRequired().HasMaxLength(4000);
+        builder.Property(s => s.CreatedAt).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        builder
+            .HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .HasOne(s => s.Tour)
+            .WithMany()
+            .HasForeignKey(s => s.TourId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    private void ConfigureStoryImage(EntityTypeBuilder<StoryImageModel> builder)
+    {
+        builder.ToTable("StoryImage");
+
+        builder.Property(si => si.FileName).IsRequired().HasMaxLength(100);
+        builder.Property(si => si.FilePath).IsRequired().HasMaxLength(500);
+
+        builder
+            .HasOne(si => si.Story)
+            .WithMany(s => s.Images)
+            .HasForeignKey(si => si.StoryId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

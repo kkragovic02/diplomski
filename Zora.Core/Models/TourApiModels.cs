@@ -67,3 +67,14 @@ public record TourForCalendar(
     long GuideId,
     string DestinationName
 );
+
+public class TourSearchParameters
+{
+    public DateTimeOffset? DateFrom { get; set; }
+    public DateTimeOffset? DateTo { get; set; }
+    public List<long>? AttractionIds { get; set; }
+    public double? DistanceFrom { get; set; }
+    public double? DistanceTo { get; set; }
+    public double? ElevationFrom { get; set; }
+    public double? ElevationTo { get; set; }
+}

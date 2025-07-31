@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Zora.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+880bbe5e365b67d3ba30ea7db564fac55829e4d1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4544836a9c5898156057d50248471d32896309af")]
 [assembly: System.Reflection.AssemblyProductAttribute("Zora.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Zora.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

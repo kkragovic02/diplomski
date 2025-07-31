@@ -11,6 +11,7 @@ using Zora.Core.Features.DestinationServices;
 using Zora.Core.Features.DiaryNoteServices;
 using Zora.Core.Features.EquipmentServices;
 using Zora.Core.Features.GalleryServices;
+using Zora.Core.Features.StoryServices;
 using Zora.Core.Features.TourServices;
 using Zora.Core.Features.UserServices;
 
@@ -58,6 +59,9 @@ public static partial class ServiceProviderConfig
 
         services.AddScoped<IGalleryReadService, GalleryReadService>();
         services.AddScoped<IGalleryWriteService, GalleryWriteService>();
+
+        services.AddScoped<IStoryReadService, StoryReadService>();
+        services.AddScoped<IStoryWriteService, StoryWriteService>();
 
         return services;
     }

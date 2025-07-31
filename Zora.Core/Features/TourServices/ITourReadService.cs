@@ -15,4 +15,9 @@ public interface ITourReadService
 
     Task<List<Tour>> GetAllAsync(CancellationToken cancellationToken);
     Task<List<TourForCalendar>> GetAllForCalendarAsync(CancellationToken cancellationToken);
+
+    Task<List<Tour>> SearchAsync(
+        TourSearchParameters searchTerm,
+        CancellationToken cancellationToken
+    );
 }

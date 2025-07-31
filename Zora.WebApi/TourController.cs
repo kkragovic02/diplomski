@@ -122,4 +122,31 @@ public class TourController(ITourWriteService tourWriteService, ITourReadService
         var tours = await tourReadService.GetAllForGuideAsync(guideId, cancellationToken);
         return Ok(tours);
     }
+
+    [HttpGet("search")]
+    public async Task<ActionResult<List<Tour>>> SearchToursAsync(
+        [FromQuery] DateTimeOffset? dateFrom,
+        [FromQuery] DateTimeOffset? dateTo,
+        [FromQuery] List<long>? attractionIds,
+        [FromQuery] double? distanceFrom,
+        [FromQuery] double? distanceTo,
+        [FromQuery] double? elevationFrom,
+        [FromQuery] double? elevationTo,
+        CancellationToken cancellationToken
+    )
+    {
+        var parameters = new TourSearchParameters
+        {
+            DateFrom = dateFrom,
+            DateTo = dateTo,
+            AttractionIds = attractionIds,
+            DistanceFrom = distanceFrom,
+            DistanceTo = distanceTo,
+            ElevationFrom = elevationFrom,
+            ElevationTo = elevationTo,
+        };
+
+        var tours = await tourReadService.SearchAsync(parameters, cancellationToken);
+        return Ok(tours);
+    }
 }

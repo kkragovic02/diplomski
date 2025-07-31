@@ -239,6 +239,67 @@ namespace Zora.Core.Database.Migrations
                     b.ToTable("Gallery", "zora");
                 });
 
+            modelBuilder.Entity("Zora.Core.Database.Models.StoryImageModel", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long>("StoryId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoryId");
+
+                    b.ToTable("StoryImage", "zora");
+                });
+
+            modelBuilder.Entity("Zora.Core.Database.Models.StoryModel", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Story", "zora");
+                });
+
             modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
                     b.Property<long>("Id")
@@ -433,6 +494,36 @@ namespace Zora.Core.Database.Migrations
                     b.Navigation("Tour");
                 });
 
+            modelBuilder.Entity("Zora.Core.Database.Models.StoryImageModel", b =>
+                {
+                    b.HasOne("Zora.Core.Database.Models.StoryModel", "Story")
+                        .WithMany("Images")
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Story");
+                });
+
+            modelBuilder.Entity("Zora.Core.Database.Models.StoryModel", b =>
+                {
+                    b.HasOne("Zora.Core.Database.Models.TourModel", "Tour")
+                        .WithMany()
+                        .HasForeignKey("TourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Zora.Core.Database.Models.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tour");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
                 {
                     b.HasOne("Zora.Core.Database.Models.DestinationModel", "Destination")
@@ -455,6 +546,11 @@ namespace Zora.Core.Database.Migrations
             modelBuilder.Entity("Zora.Core.Database.Models.DestinationModel", b =>
                 {
                     b.Navigation("Tours");
+                });
+
+            modelBuilder.Entity("Zora.Core.Database.Models.StoryModel", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Zora.Core.Database.Models.TourModel", b =>
